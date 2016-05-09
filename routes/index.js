@@ -22,6 +22,7 @@ router.post('/callback', function(req, res) {
 	  	  "eventType":"138311608800106203",
 	  	  "content":{
 			  "contentType": 1,
+			  "toType": 1,
 			  "text": hello	
 		  }
 	})
