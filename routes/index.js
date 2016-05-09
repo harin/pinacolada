@@ -8,7 +8,7 @@ router.post('/callback', function(req, res) {
 	console.log('called back 2', req.body.result[0]['content']);
 
 	var hello = "Hi I'm Pin. You said" + req.body.result[0]['content']['text'];
-	var frm = req.body.result[0].from;	
+	var frm = req.body.result[0].content.from;	
 
 	unirest.post('https://trialbot-api.line.me/v1/events')
 	.headers({ 'Content-Type' : 'application/json; charset=UTF-8', 
