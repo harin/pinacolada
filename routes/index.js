@@ -26,6 +26,7 @@ router.post('/callback', function(req, res) {
 		  }
 	})
 	.end(function(msg){
+		console.log(msg.body);
 		res.send("OK");
 	});
 
