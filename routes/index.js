@@ -21,10 +21,8 @@ router.post('/callback', function(req, res) {
 	 	  "toChannel":1383378250,
 	  	  "eventType":"138311608800106203",
 	  	  "content":{
-		      "messages": [{
 			  "contentType": 1,
 			  "text": hello	
-		      }]
 		  }
 	})
 	.end(function(msg){
