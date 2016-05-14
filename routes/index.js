@@ -179,7 +179,7 @@ router.post('/training', function(req,res){
 
 	MEMORY[mid] = user;
 	bc.sendText([mid], "That's very interesting.");
-	bc.sendText([mid], "You seem to like " + (output[3] || output[1])[0]);
+	bc.sendText([mid], "You seem to like " + _.capitalize((output[3] || output[1])[0]));
 
 	res.send('tinder done', output);
 });
