@@ -10,15 +10,18 @@ wongnai({
   price: [250]
 }).then(function(data) {
   //learn from input
-  /*
-  pml.learnInput({
-    nationality: ['japanese', 'italian']
-  }, user, +3); //positive
 
-
+  //like
   pml.learnInput({
-    nationality: ['indian']
-  }, user, -3); //negative*/
+    nationality: ['japanese', 'italian'],
+    food: ['fastfood', 'ice cream']
+  }, user, 1);
+
+  //love
+  pml.learnInput({
+    nationality: ['indian'],
+    food: ['steak']
+  }, user, 3);
   
   //learn from visited restaurant training
   pml.learnRestaurant(data[0], user);
