@@ -41,7 +41,7 @@ var respondForState = function(mid, state) {
 		msg = "Sorry, I don't understand."
 	}
 	console.log("sending ", msg, " to ", mid);
-	bc.sendText(mid, msg);
+	bc.sendText([mid], msg);
 }
 
 var updateState = function(mid, object) {
