@@ -12,7 +12,7 @@ var MEMORY = {};
 
 var fsm = require('../lib/fsm');
 var client = require('../lib/wit_client');
-var queryWongnai = require('../lib/wongnai/index.js');
+var queryWongnai = require('../lib/wongnai');
 var userState = {};
 
 var DEBUG = true;
@@ -45,6 +45,15 @@ var MOVES = ['INQUIRY', 'LOCATION', 'SATISFIED', 'FEEDBACK'
 var NORMAL_MOVES = ['INQUIRY', 'LOCATION', 'SATISFIED', 'FEEDBACK',
 										,'RESET', 'UNSATISFIED'];
 
+var QUERY_WEIGHT = {
+	'INQUIRY': 1,
+	'LOCATION': 2,
+	'SATISFIED': 3,
+	'UNSATISFIED': 4,
+	'FEEDBACK': 5,
+	'RESET': 6
+};
+
 var VALID_QUERY_KEYS = [
 	'latitude', 'longitude', 'radius',
 	'nationality', 'food', 'business',
@@ -52,15 +61,15 @@ var VALID_QUERY_KEYS = [
 	'open', 'discount'
 ]
 
-var VALID_Q_ATTRIBUTES = {
-	'nationality': [],
-	'food': [],
-	'business': [],
-	'alcohol' : [],
-	'parking': [],
-	'open': [],
-	'discount': []
-}
+var VALID_Q_ATTRIBUTES = [
+	'nationality',
+	'food',
+	'business',
+	'alcohol' ,
+	'parking',
+	'open',
+	'discount'
+]
 
 var SUGGEST_LIMIT = 10;
 
@@ -101,6 +110,7 @@ var textToAction = function(mid, text, state) {
 			return resolve(['RESET']);
 		}
 
+		text = text.toLowerCase();
 		client.message(text, {}, function(err, data){
 			var entities = data.entities;
 			console.log(JSON.stringify(data, null, 2));
@@ -113,7 +123,6 @@ var textToAction = function(mid, text, state) {
 					obj = {}
 					keys.forEach(function(key) {
 						if (VALID_QUERY_KEYS.indexOf(key) >= 0) {
-
 							var entity = entities[key];
 							if (Array.isArray(entity)) {
 								obj[key] = entity.map(function(val){
@@ -130,17 +139,41 @@ var textToAction = function(mid, text, state) {
 					});
 					updateUserState(mid, obj);
 				}
+			} else if (state === 'FEEDBACK') {
+				alpha = null;
+				if (keys.indexOf('SATISFIED') >= 0 ) {
+					alpha = 1;
+				} else if (keys.indexOf('UNSATISFIED') >= 0) {
+					alpha = -1;
+				}
+				var query = userState[mid].lastSuggestion;
+				var passQuery = MEMORY[mid] || { w: {} };
+				learnedQuery = pml.learnInput(query, passQuery, alpha);
+				MEMORY[mid] = learnedQuery;
+
+				keys = ['FEEDBACK'];
 			}
 
 			keys = keys.map(function(key) {
 				return key.toUpperCase();
 			}).filter(function(key) {
 				return NORMAL_MOVES.indexOf(key) >= 0;
+			}).sort(function(a,b) {
+				if (QUERY_WEIGHT[a] && QUERY_WEIGHT[b])
+					return QUERY_WEIGHT[a] > QUERY_WEIGHT[b];
+				else
+					return 0;
 			});
 
 			return resolve(keys);
 		});
 	});
+}
+
+var askFeedback = function(mid) {
+	userState[mid].waitingForFeedback = false;
+	msg = 'Do you like the restaurant I suggested?';
+	sendText(mid, msg);
 }
 
 var respondForState = function(mid, state) {
@@ -151,27 +184,35 @@ var respondForState = function(mid, state) {
 		msg = 'Send me your location'; 
 	} else if (state === 'SUGGEST') {
 
-
-
-
-
 		// build query from user state
 		var state = userState[mid];
-		var query = sampleQuery;
-		if (state.location) {
-			query = {
-				latitude: state.location.latitude,
-				longitude: state.location.longitude
-			}
-			var obj = _.pick(state, VALID_Q_ATTRIBUTES);
-			query = _.merge(query, obj);
+		var userQuery = {};
+		var query = {
+			latitude: state.location.latitude,
+			longitude: state.location.longitude
 		}
+		userQuery = _.pick(state, VALID_Q_ATTRIBUTES);
+		query = _.assign(query, userQuery);
+
 		var passQuery = MEMORY[mid] || { w: {} };
-		learnedQuery = learnInput(query, passQuery);		
+		learnedQuery = pml.learnInput(query, passQuery);		
 		MEMORY[mid] = learnedQuery;
 
-		console.log('querying wongnai with ' + learnedQuery);
-		return queryWongnai(learnedQuery).then(function(data){
+		console.log('state ', state);
+		console.log('userQuery ',userQuery);
+		var activeQuery = null;
+		if (Object.keys(userQuery).length > 0) {
+			console.log('using unlearned query');
+ 			activeQuery = query;
+		} else {
+			console.log('using learned query');
+			activeQuery = learnedQuery;
+		}
+
+		userState[mid].lastSuggestion = activeQuery;
+
+		console.log('querying wongnai with ' + JSON.stringify(activeQuery));
+		return queryWongnai(activeQuery).then(function(data){
 			var rest = null;
 			if (userState[mid].suggestedCount == 0) {
 				rest = data[0];
@@ -188,6 +229,13 @@ var respondForState = function(mid, state) {
 			console.error(err.stack);
 			return null;
 		});
+	} else if (state === 'FEEDBACK') {
+		if (typeof userState[mid].waitingForFeedback === 'undefined') {
+			userState[mid].waitingForFeedback = true;
+			setTimeout(function() {
+				askFeedback(mid)
+			}, 15000);
+		}
 	} else if (state === 'DONT_UNDERSTAND') {
 		msg = "Sorry, I don't understand."
 	}
@@ -283,6 +331,10 @@ router.post('/callback', function(req, res) {
 		var newState = currentState;
 
 		ensureUserState(fromMID);
+
+		if (userState[fromMID].waitingForFeedback) {
+			return res.send('OK');
+		}
 
 		if (userState[fromMID].suggestedCount >= SUGGEST_LIMIT) {
 			console.log(userState[fromMID].suggestedCount);
