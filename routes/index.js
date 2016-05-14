@@ -32,7 +32,7 @@ router.post('/callback', function(req, res) {
 			console.log('from ' + result.content.from);
 			Unakul.receiveMessage(text, result.content.from, function(err, data) {
 				console.error(err);
-				console.log(data);
+				console.log(JSON.stringify(data,null,2));
 			});
 		}
 	}
