@@ -157,7 +157,6 @@ router.get('/foodboard', function(req,res){
 	var nationalities = Object.keys(wongnaiEnum.raw.nationality);
 	var combined = _.concat(foods, nationalities);
 	var mid = req.query.mid;
-	console.log('mid', mid);
 	
 	res.render('foodboard', {title: 'Foodboard', foods: combined, mid: mid})
 });
@@ -176,6 +175,7 @@ router.post('/training', function(req,res){
 		output[score].push(genre);
 	}
 	
+	bc.sendText([mid], "That's very interesting. ");
 	MEMORY[mid] = user;
 	
 	res.send('tinder done');
