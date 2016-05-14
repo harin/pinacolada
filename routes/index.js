@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var bc = require('../lib/bc');
 var _ = require('lodash');
+var Unakul = require('../lib/unakul');
 
 router.get('/', function(req,res){
 	res.send('PIN is up.');
@@ -22,7 +23,10 @@ router.post('/callback', function(req, res) {
 		}else{
 			//Plain Text
 			var text = result.content.text;
-			bc.sendText(sender, 'You sent me ' + text);
+			Unakul.receiveMessage(text, result.content.from, function(err, resp){
+				bc.sendText(sender, resp);
+			});
+			
 		}
 	}
 	
