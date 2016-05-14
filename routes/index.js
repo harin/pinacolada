@@ -27,7 +27,13 @@ router.post('/callback', function(req, res) {
 		}else{
 			//Plain Text
 			var text = result.content.text;
-			Unakul.receiveMessage(text, result.content.from, null);
+			// (msg, sessionId, callback)
+			console.log('sending ' + text);
+			console.log('from ' + result.content.from);
+			Unakul.receiveMessage(text, result.content.from, function(err, data) {
+				console.error(err);
+				console.log(data);
+			});
 		}
 	}
 	
