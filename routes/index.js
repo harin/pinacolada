@@ -90,7 +90,7 @@ router.post('/callback', function(req, res) {
 
 			if (currentState === 'WAIT_LOCATION' && !isLocation) {
 				// ask user for location
-				bc.sendText(fromMID, "I'm waiting for your location :/");
+				bc.sendText([fromMID], "I'm waiting for your location :/");
 				return res.send('OK');
 			}
 
