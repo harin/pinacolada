@@ -12,8 +12,11 @@ var client = require('../lib/wit_client');
 var queryWongnai = require('../lib/wongnai/index.js');
 var userState = {};
 
-console.log(process.env);
 var DEBUG = true;
+if (process.env.NODE_ENV === 'production') {
+	DEBUG = false;
+}
+
 
 var sampleQuery = {
   "latitude": 10.000033,
