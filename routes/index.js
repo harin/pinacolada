@@ -156,34 +156,28 @@ router.get('/foodboard', function(req,res){
 	var foods = Object.keys(wongnaiEnum.raw.food);
 	var nationalities = Object.keys(wongnaiEnum.raw.nationality);
 	var combined = _.concat(foods, nationalities);
+	var mid = req.query.mid;
+	console.log('mid', mid);
 	
-	for(var i = 0; i < combined.length; i++){
-		// getty.getRandom("dish food " + combined[i]).then(function(data){ 
-			
-		// })
-	}
-	
-	res.render('foodboard', {title: 'Foodboard', foods: combined})
+	res.render('foodboard', {title: 'Foodboard', foods: combined, mid: mid})
 });
 
 router.post('/training', function(req,res){
-	var body = req.body;
-	var objectKeys = Object.keys(req.body);
+	var objectKeys = Object.keys(req.body.likeness);
 	var output = {1: [], 3:[]};
-	var mid = "0";
+	var mid = req.body.mid;
 	var user = MEMORY[mid] || { w: {} };
 	
 	pml.learnTinder(output, user);
 	
 	for(var i = 0; i < objectKeys.length; i++){
 		var genre = objectKeys[i];
-		var score = req.body[genre];
+		var score = req.body.likeness[genre];
 		output[score].push(genre);
 	}
 	
 	MEMORY[mid] = user;
 	
-	console.log('output = ', output);
 	res.send('tinder done');
 });
 

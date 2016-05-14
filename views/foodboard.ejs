@@ -28,12 +28,16 @@
         
     };
     
+    
     function done(){
         console.log(likeness);
         $.ajax({
             url: '/training',
             type: 'post',
-            data: likeness,
+            data: {
+             mid: '<%= mid %>',
+             likeness:   likeness
+            },
             success: function(data){
                 console.log(data, 'pin spam');
             },
@@ -41,6 +45,7 @@
                 console.log('err', x);
             }
         });
+        window.location.href = "line://nv/profile";
     }
     
     $(document).ready(function(){
