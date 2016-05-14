@@ -1,7 +1,7 @@
 wongnai = require('./lib/wongnai');
 
 wongnai({
-  food: ['ice cream', 'fastfood']
+  price: [100, 300]
 }).then(function(data, q) {
   console.log(data);
 }, function(err) { 
