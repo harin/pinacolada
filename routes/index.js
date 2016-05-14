@@ -158,6 +158,9 @@ router.get('/foodboard', function(req,res){
 	var combined = _.concat(foods, nationalities);
 	var mid = req.query.mid;
 	
+	combined = _.pull(combined, 'international', 'others', 'quick meal');
+	console.log(combined);
+
 	res.render('foodboard', {title: 'Foodboard', foods: combined, mid: mid})
 });
 
