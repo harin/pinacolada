@@ -34,12 +34,16 @@ var respondForState = function(mid, state) {
 	} else if (state === 'WAIT_LOCATION') {
 		msg = 'Send me your location'; 
 	} else if (state === 'SUGGEST') {
+		// build query from user state
+		var state = userState[mid];
+
 		return query(sampleQuery).then(function(data){
 			console.log(data);
 		});
 	} else if (state === 'DONT_UNDERSTAND') {
 		msg = "Sorry, I don't understand."
 	}
+	
 	console.log("sending ", msg, " to ", mid);
 	bc.sendText([mid], msg);
 }
@@ -70,13 +74,13 @@ router.post('/callback', function(req, res) {
 			return res.send('OK');
 		}
 
-		if(isLocation){
+		if (isLocation){
 			var location = result.content.location;
-
+			respondForState(fromMID, currentState);
 			// bc.sendText(sender, 'You sent me a location ' +
 			//  location.latitude + ", " 
 			//  + location.longitude);
-		}else{
+		} else {
 
 			//Plain Text
 			var text = result.content.text;
