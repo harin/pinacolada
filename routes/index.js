@@ -4,7 +4,7 @@ var bc = require('../lib/bc');
 var _ = require('lodash');
 var fsm = require('../lib/fsm');
 var client = require('../lib/wit_client');
-var query = require('../lib/wongnai/index.js');
+var queryWongnai = require('../lib/wongnai/index.js');
 var userState = {};
 
 var sampleQuery = {
@@ -60,7 +60,7 @@ var respondForState = function(mid, state) {
 				longitude: state.location.longitude
 			}
 		}
-		return query(query).then(function(data){
+		return queryWongnai(query).then(function(data){
 			var firstRest = data[0];
 			var url = "http://www.wongnai.com/" + firstRest.url;
 			var msg = "Why don't you do eat at " + url;
