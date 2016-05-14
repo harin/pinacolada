@@ -1,0 +1,2 @@
+var Unakul = require('../lib/unakul.js');
+Unakul.client.interactive();
