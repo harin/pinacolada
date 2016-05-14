@@ -34,7 +34,8 @@ var sampleQuery = {
   "price": [125, 100] //Set of prices, will use max() and min() or only max() if length == 1
 };
 
-var MOVES = ['INQUIRY', 'LOCATION', 'SATISFIED', 'FEEDBACK', 'RESET'];
+var MOVES = ['INQUIRY', 'LOCATION', 'SATISFIED', 'FEEDBACK'
+							, 'RESET', 'UNSATISFIED', 'SURPRISE', 'CUISINE'];
 
 var getMove = function(currentState) {
 	if (currentState === 'IDLE') {
@@ -129,7 +130,6 @@ router.post('/callback', function(req, res) {
 				});
 				respondForState(fromMID, newState);
 				console.log(fromMID, ' switched from ', currentState, ' to ', newState);
-
 			} else {
 
 				//Plain Text
@@ -138,7 +138,14 @@ router.post('/callback', function(req, res) {
 				if (MOVES.indexOf(TEXT) > 0) {
 					console.log('command detected, moving with ' + TEXT);
 					newState = fsm.clockNext(fromMID, TEXT);
+					console.log(fromMID, ' switched from ', currentState, ' to ', newState);
 					respondForState(fromMID, newState);
+					return res.send('OK');
+				}
+
+				if (text.match(/hi pin/i) {
+					newState = fsm.clockNext(fromMID, 'RESET');
+					console.log(fromMID, ' switched from ', currentState, ' to ', newState);
 					return res.send('OK');
 				}
 
@@ -154,10 +161,8 @@ router.post('/callback', function(req, res) {
 					if (keys.length > 0) {
 						newState = fsm.clockNext(fromMID, keys);
 					}
-
 					respondForState(fromMID, newState);
 					console.log(fromMID, ' switched from ', currentState, ' to ', newState);
-
 				});
 			}
 		} catch (err) {
