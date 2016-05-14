@@ -11,8 +11,8 @@ router.get('/', function(req,res){
 router.post('/callback', function(req, res) {
 	console.log('called back', req.body.result);
 	
-	
-	req.body.result.forEach(function(result){
+	for(var i = 0 ;i < req.body.result.length; i++){
+		var result = req.body.result[i];
 		var isLocation = _.has(result.content, 'location.latitude');
 		var sender = [result.content.from];
 		
@@ -24,8 +24,9 @@ router.post('/callback', function(req, res) {
 			var text = result.content.text;
 			bc.sendText(sender, 'You sent me ' + text);
 		}
-		
-	});
+	}
+	
+	res.send('OK');
 
 
 });
