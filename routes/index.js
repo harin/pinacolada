@@ -40,7 +40,8 @@ var respondForState = function(mid, state) {
 	} else if (state === 'DONT_UNDERSTAND') {
 		msg = "Sorry, I don't understand."
 	}
-	bc.sendText(mid, state)
+	console.log("sending ", msg, " to ", mid);
+	bc.sendText(mid, msg);
 }
 
 var updateState = function(mid, object) {
