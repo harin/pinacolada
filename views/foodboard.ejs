@@ -36,6 +36,9 @@
             data: likeness,
             success: function(data){
                 console.log(data, 'pin spam');
+            },
+            error: function(x){
+                console.log('err', x);
             }
         });
     }

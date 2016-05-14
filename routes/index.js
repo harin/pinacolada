@@ -184,7 +184,8 @@ router.post('/training', function(req,res){
 	
 	MEMORY[mid] = user;
 	
-	console.log(req.body);
+	console.log('output = ', output);
+	res.send('tinder done');
 });
 
 router.post('/test', function(req,res){
@@ -241,8 +242,8 @@ router.post('/callback', function(req, res) {
 			return res.send('OK');
 		}
 
-		console.log('isLocation =',isLocation);
-		console.log('currentState=',currentState);
+		console.log('isLocation =', isLocation);
+		console.log('currentState =', currentState);
 
 		if (isLocation) {
 			var location = result.content.location;
@@ -253,7 +254,7 @@ router.post('/callback', function(req, res) {
 			});
 			respondForState(fromMID, newState);
 			console.log(fromMID, ' switched from ', currentState, ' to ', newState);
-			return res.send('OK')
+			return res.send('OK');
 		} else {
 			//Plain Text
 			var text = result.content.text;
