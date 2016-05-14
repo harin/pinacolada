@@ -6,6 +6,9 @@ var bc = require('../lib/bc');
 var _ = require('lodash');
 var wongnaiEnum = require('../lib/wongnai/enum.js');
 var getty = require('../lib/getty');
+var pml = require('../lib/pml');
+
+var MEMORY = {};
 
 var fsm = require('../lib/fsm');
 var client = require('../lib/wit_client');
@@ -153,7 +156,6 @@ router.get('/foodboard', function(req,res){
 	var foods = Object.keys(wongnaiEnum.raw.food);
 	var nationalities = Object.keys(wongnaiEnum.raw.nationality);
 	var combined = _.concat(foods, nationalities);
-	console.log(combined);
 	
 	for(var i = 0; i < combined.length; i++){
 		// getty.getRandom("dish food " + combined[i]).then(function(data){ 
@@ -162,6 +164,32 @@ router.get('/foodboard', function(req,res){
 	}
 	
 	res.render('foodboard', {title: 'Foodboard', foods: combined})
+});
+
+router.post('/training', function(req,res){
+	var body = req.body;
+	var objectKeys = Object.keys(req.body);
+	var output = {1: [], 3:[]};
+	var mid = "0";
+	var user = MEMORY[mid] || { w: {} };
+	
+	pml.learnTinder(output, user);
+	
+	for(var i = 0; i < objectKeys.length; i++){
+		var genre = objectKeys[i];
+		var score = req.body[genre];
+		output[score].push(genre);
+	}
+	
+	MEMORY[mid] = user;
+	
+	console.log(req.body);
+});
+
+router.post('/test', function(req,res){
+	//u1abe46713713ecbc8b66b04691c354f9
+	bc.sendLink(['u1abe46713713ecbc8b66b04691c354f9'], 'template1');
+	res.send('ok');
 });
 
 /* GET home page. */
