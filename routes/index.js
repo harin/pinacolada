@@ -69,7 +69,7 @@ router.post('/callback', function(req, res) {
 			var isLocation = _.has(result.content, 'location.latitude');
 			var fromMID = result.content.from;
 			var currentState = fsm.getState(fromMID);
-			var newState = null;
+			var newState = currentState;
 
 			if (currentState === 'WAIT_LOCATION' && !isLocation) {
 				// ask user for location
@@ -78,15 +78,14 @@ router.post('/callback', function(req, res) {
 			}
 
 			if (isLocation && currentState === 'WAIT_LOCATION'){
+				
 				var location = result.content.location;
 				respondForState(fromMID, currentState);
 				newState = fsm.clockNext(fromMID, ['LOCATION']);
 				updateState(fromMID, {
 					location: location
 				});
-				// bc.sendText(sender, 'You sent me a location ' +
-				//  location.latitude + ", " 
-				//  + location.longitude);
+
 			} else {
 
 				//Plain Text
@@ -99,8 +98,10 @@ router.post('/callback', function(req, res) {
 					});
 					var object = {};
 					console.log('moving with ', keys);
-					newState = fsm.clockNext(fromMID, keys);
-					// updateState(fromMID, object);
+
+					if (keys.length > 0) {
+						newState = fsm.clockNext(fromMID, keys);
+					}
 				});
 			}
 			console.log(fromMID, ' switched from ', currentState, ' to ', newState);
