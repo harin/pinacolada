@@ -27,6 +27,7 @@ var sampleQuery = {
   "price": [125, 100] //Set of prices, will use max() and min() or only max() if length == 1
 };
 
+var MOVES = ['INQUIRY', 'LOCATION', 'SATISFIED', 'FEEDBACK', 'RESET'];
 
 var getMove = function(currentState) {
 	if (currentState === 'IDLE') {
@@ -60,6 +61,7 @@ var respondForState = function(mid, state) {
 				longitude: state.location.longitude
 			}
 		}
+		console.log('querying wongnai with ' + query);
 		return queryWongnai(query).then(function(data){
 			var firstRest = data[0];
 			var url = "http://www.wongnai.com/" + firstRest.url;
@@ -118,6 +120,14 @@ router.post('/callback', function(req, res) {
 
 				//Plain Text
 				var text = result.content.text;
+				var TEXT = text.toUpperCase();
+				if (MOVES.indexOf(TEXT) > 0) {
+					console.log('command detected, moving with ' + TEXT);
+					newState = fsm.clockNext(fromMID, TEXT);
+					respondForState(fromMID, newState);
+					return res.send('OK');
+				}
+
 				client.message(text, {}, function(err, data){
 					var en = data.entities;
 					console.log(JSON.stringify(data, null, 2));
