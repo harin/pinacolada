@@ -14,7 +14,7 @@ router.post('/callback', function(req, res) {
 	
 	req.body.result.forEach(function(result){
 		var isLocation = _.has(result.content, 'location.latitude');
-		var sender = result.content.from;
+		var sender = [result.content.from];
 		
 		if(isLocation){
 			var location = result.content.location;
