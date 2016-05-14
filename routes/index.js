@@ -90,6 +90,7 @@ router.post('/callback', function(req, res) {
 
 			client.message(text, {}, function(err, data){
 				var en = data.entities;
+				console.log(JSON.stringify(data, null, 2));
 				var keys = Object.keys(en);
 				var object = {};
 				var newState = fsm.clockNext(fromMID, keys);
