@@ -97,6 +97,7 @@ router.post('/callback', function(req, res) {
 
 				respondForState(fromMID, newState);
 				updateState(fromMID, object);
+				return res.send('OK');
 			});
 		}
 	}
