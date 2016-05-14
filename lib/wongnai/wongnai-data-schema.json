@@ -1,0 +1,349 @@
+{
+    "id":147586,
+    "displayName":"Gyu Gyu Tei เลียบทางด่วน ลาดพร้าว 88 - รามอินทรา",
+    "name":"Gyu Gyu Tei เลียบทางด่วน ลาดพร้าว 88 - รามอินทรา",
+    "nameOnly":{
+        "primary":"Gyu Gyu Tei",
+        "thai":"กิว กิว เต้",
+        "english":"Gyu Gyu Tei"
+    },
+    "branch":{
+        "primary":"เลียบทางด่วน ลาดพร้าว 88 - รามอินทรา"
+    },
+    "url":"restaurants/147586bD-gyu-gyu-tei-%E0%B9%80%E0%B8%A5%E0%B8%B5%E0%B8%A2%E0%B8%9A%E0%B8%97%E0%B8%B2%E0%B8%87%E0%B8%94%E0%B9%88%E0%B8%A7%E0%B8%99-%E0%B8%A5%E0%B8%B2%E0%B8%94%E0%B8%9E%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%A7-88-%E0%B8%A3%E0%B8%B2%E0%B8%A1%E0%B8%AD%E0%B8%B4%E0%B8%99%E0%B8%97%E0%B8%A3%E0%B8%B2",
+    "shortUrl":"r/147586bD",
+    "rUrl":"restaurants/147586bD-gyu-gyu-tei-%E0%B9%80%E0%B8%A5%E0%B8%B5%E0%B8%A2%E0%B8%9A%E0%B8%97%E0%B8%B2%E0%B8%87%E0%B8%94%E0%B9%88%E0%B8%A7%E0%B8%99-%E0%B8%A5%E0%B8%B2%E0%B8%94%E0%B8%9E%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%A7-88-%E0%B8%A3%E0%B8%B2%E0%B8%A1%E0%B8%AD%E0%B8%B4%E0%B8%99%E0%B8%97%E0%B8%A3%E0%B8%B2",
+    "rShortUrl":"r/147586bD",
+    "photosUrl":"restaurants/147586bD-gyu-gyu-tei-%E0%B9%80%E0%B8%A5%E0%B8%B5%E0%B8%A2%E0%B8%9A%E0%B8%97%E0%B8%B2%E0%B8%87%E0%B8%94%E0%B9%88%E0%B8%A7%E0%B8%99-%E0%B8%A5%E0%B8%B2%E0%B8%94%E0%B8%9E%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%A7-88-%E0%B8%A3%E0%B8%B2%E0%B8%A1%E0%B8%AD%E0%B8%B4%E0%B8%99%E0%B8%97%E0%B8%A3%E0%B8%B2/photos",
+    "inServiceRegion":true,
+    "categories":[
+        {
+            "id":43,
+            "name":"เนื้อย่าง บาร์บีคิว",
+            "internationalName":"Barbeque/Grill",
+            "iconUrl":"static/5.7.0/category/common/images/43.png",
+            "domain":{
+                "name":"MAIN",
+                "value":1
+            }
+        },
+        {
+            "id":2,
+            "name":"อาหารญี่ปุ่น",
+            "internationalName":"Japanese",
+            "iconUrl":"static/5.7.0/category/common/images/2.png",
+            "domain":{
+                "name":"MAIN",
+                "value":1
+            }
+        },
+        {
+            "id":38,
+            "name":"ร้านสาขา",
+            "internationalName":"Chain/Franchise",
+            "iconUrl":"static/5.7.0/category/common/images/38.png",
+            "domain":{
+                "name":"MAIN",
+                "value":1
+            }
+        }
+    ],
+    "verifiedInfo":false,
+    "verifiedLocation":false,
+    "defaultPhoto":{
+        "photoId":"80c302ecab4a49bd96e331ffbfb1e4c7",
+        "photoUrl":"photos/80c302ecab4a49bd96e331ffbfb1e4c7",
+        "thumbnailUrl":"https://s3-ap-southeast-1.amazonaws.com/photo.wongnai.com/photos/2014/01/31/80c302ecab4a49bd96e331ffbfb1e4c7-t.jpg",
+        "smallUrl":"https://s3-ap-southeast-1.amazonaws.com/photo.wongnai.com/photos/2014/01/31/80c302ecab4a49bd96e331ffbfb1e4c7-s.jpg",
+        "largeUrl":"https://s3-ap-southeast-1.amazonaws.com/photo.wongnai.com/photos/2014/01/31/80c302ecab4a49bd96e331ffbfb1e4c7.jpg",
+        "width":1024,
+        "height":576,
+        "category":{
+            "value":5,
+            "name":"อื่นๆ"
+        },
+        "uploader":{
+            "id":"2fa05433f2bc43eab9764b8dc688731f",
+            "url":"users/2fa05433f2bc43eab9764b8dc688731f",
+            "name":"Zhongdham Tong's Saisriyuhd",
+            "me":false,
+            "thumbnailUrl":"https://s3-ap-southeast-1.amazonaws.com/photo.wongnai.com/photos/2013/12/29/96f24b9a3bb44c26ae9b119135cfc27e-t.jpg",
+            "photoUrl":"https://s3-ap-southeast-1.amazonaws.com/photo.wongnai.com/photos/2013/12/29/96f24b9a3bb44c26ae9b119135cfc27e-s.jpg",
+            "largeUrl":"https://s3-ap-southeast-1.amazonaws.com/photo.wongnai.com/photos/2013/12/29/96f24b9a3bb44c26ae9b119135cfc27e.jpg",
+            "profilePicture":{
+                "thumbnailUrl":"https://s3-ap-southeast-1.amazonaws.com/photo.wongnai.com/photos/2013/12/29/96f24b9a3bb44c26ae9b119135cfc27e-t.jpg",
+                "smallUrl":"https://s3-ap-southeast-1.amazonaws.com/photo.wongnai.com/photos/2013/12/29/96f24b9a3bb44c26ae9b119135cfc27e-s.jpg",
+                "largeUrl":"https://s3-ap-southeast-1.amazonaws.com/photo.wongnai.com/photos/2013/12/29/96f24b9a3bb44c26ae9b119135cfc27e.jpg",
+                "uploaded":true
+            },
+            "profilePictureLayers":[
+
+            ],
+            "rank":{
+                "name":"Spotter",
+                "value":4,
+                "url":"ranks/4",
+                "iconUrl":"static/5.7.0/user/common/images/rank/rank-4-32.png"
+            },
+            "joinTime":{
+                "iso":"2013-12-29T13:42:39+07:00",
+                "full":"อา., 29 ธ.ค. 2013 13:42:39",
+                "timePassed":"29 ธ.ค. 2013"
+            },
+            "statistic":{
+                "numberOfTopics":0,
+                "numberOfTopicComments":0,
+                "numberOfReviews":27,
+                "numberOfRatings":27,
+                "numberOfChallenges":9,
+                "numberOfFirstReviews":1,
+                "numberOfEditorialReviews":0,
+                "numberOfQualityReviews":22,
+                "numberOfReviewLikes":80,
+                "numberOfEditorChoiceReviews":0,
+                "numberOfPhotoLikes":147,
+                "numberOfPhotos":91,
+                "numberOfFollowing":9,
+                "numberOfFollowers":11,
+                "numberOfCheckins":30,
+                "numberOfMarkAsBeenHeres":0,
+                "numberOfUniqueCheckins":30,
+                "numberOfCoins":1934,
+                "numberOfLists":0,
+                "numberOfUnreadNotifications":39,
+                "numberOfNotifications":212,
+                "numberOfUnreadMessages":3,
+                "numberOfUnreadChallenge":0,
+                "points":1934
+            },
+            "userUrl":"users/2fa05433f2bc43eab9764b8dc688731f",
+            "numberOfReviews":27,
+            "numberOfEditorialReviews":0,
+            "numberOfReviewLikes":80,
+            "numberOfPhotoLikes":147,
+            "numberOfPhotos":91,
+            "numberOfFollowing":9,
+            "numberOfFollowers":11,
+            "numberOfCoins":1934,
+            "aboutMe":"www.facebook.com/wowprettyjob"
+        },
+        "uploadedTime":{
+            "iso":"2014-01-31T16:28:51+07:00",
+            "full":"ศ., 31 ม.ค. 2014 16:28:51",
+            "timePassed":"31 ม.ค. 2014"
+        },
+        "numberOfComments":0,
+        "commentDisabled":false,
+        "numberOfLikes":0,
+        "numberOfDislikes":0,
+        "photoVote":{
+            "like":false,
+            "dislike":false
+        },
+        "source":{
+            "id":4,
+            "name":"Wongnai for Android"
+        },
+        "businessUrl":"restaurants/147586bD-gyu-gyu-tei-%E0%B9%80%E0%B8%A5%E0%B8%B5%E0%B8%A2%E0%B8%9A%E0%B8%97%E0%B8%B2%E0%B8%87%E0%B8%94%E0%B9%88%E0%B8%A7%E0%B8%99-%E0%B8%A5%E0%B8%B2%E0%B8%94%E0%B8%9E%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%A7-88-%E0%B8%A3%E0%B8%B2%E0%B8%A1%E0%B8%AD%E0%B8%B4%E0%B8%99%E0%B8%97%E0%B8%A3%E0%B8%B2",
+        "uploadedDate":"Fri Jan 31 16:28:51 ICT 2014"
+    },
+    "domain":{
+        "name":"MAIN",
+        "value":1
+    },
+    "closed":false,
+    "markAsBeenHere":false,
+    "lat":13.779722,
+    "lng":100.608429,
+    "distance":995.930383870244,
+    "statistic":{
+        "rating":4.198412698412699,
+        "showRating":true,
+        "numberOfReviews":17,
+        "numberOfRatings":17,
+        "numberOfEditorialReviews":0,
+        "numberOfPhotos":112,
+        "numberOfCheckins":18,
+        "numberOfMarkAsBeenHeres":0,
+        "numberOfUniqueCheckins":15,
+        "numberOfBookmarks":42,
+        "numberOfFavouriteMenus":19,
+        "numberOfDistinctDeals":0,
+        "numberOfVisibleDeals":0
+    },
+    "teasers":[
+        {
+            "url":"reviews/34e8cf72ba86453aa2d54067391d2394",
+            "text":"ปิ้งย่างเกรดพรีเมี่ยม เนื้อวัวคุณภาพคัดเกรดมีตั้งแต่ราคาถูก-ราคาแพง ทีเด็ดอยู่ที่น้ำจิ้ม"
+        },
+        {
+            "url":"reviews/d85cad82082242699c376c9e95fc8352",
+            "text":"ร้านอาหารปิ้งย่างร้านดังเลียบด่วน"
+        }
+    ],
+    "workingHoursStatus":{
+        "open":true,
+        "message":"จนถึง 23:00"
+    },
+    "completeness":2,
+    "priceRange":{
+        "name":"251 - 500 บาท",
+        "value":3
+    },
+    "contact":{
+        "address":{
+            "street":"ถนนประดิษฐมนูญธรรม",
+            "hint":"อยู่ด้านในปั๊ม",
+            "city":{
+                "id":1,
+                "name":"กรุงเทพมหานคร"
+            }
+        },
+        "homepage":"http://gyugyuteibbq.com",
+        "callablePhoneno":"0812916666021167865",
+        "callablePhoneNumbers":[
+            "0812916666021167865"
+        ],
+        "phoneno":"08-12916666/ 02-116-7865"
+    },
+    "mainPhoto":{
+        "photoId":"002fc00533bf4b729b0b5cd2ff7bd026",
+        "photoUrl":"photos/002fc00533bf4b729b0b5cd2ff7bd026",
+        "description":"Gyu Gyu Tei Beef (550฿.)",
+        "thumbnailUrl":"https://s3-ap-southeast-1.amazonaws.com/photo.wongnai.com/photos/2015/03/13/002fc00533bf4b729b0b5cd2ff7bd026-t.jpg?v=4",
+        "smallUrl":"https://s3-ap-southeast-1.amazonaws.com/photo.wongnai.com/photos/2015/03/13/002fc00533bf4b729b0b5cd2ff7bd026-s.jpg?v=4",
+        "largeUrl":"https://s3-ap-southeast-1.amazonaws.com/photo.wongnai.com/photos/2015/03/13/002fc00533bf4b729b0b5cd2ff7bd026.jpg?v=4",
+        "width":960,
+        "height":720,
+        "category":{
+            "value":5,
+            "name":"อื่นๆ"
+        },
+        "uploader":{
+            "id":"c08b2776067a4026b882abfc6fca8330",
+            "url":"users/c08b2776067a4026b882abfc6fca8330",
+            "name":"Dow Sirirak",
+            "me":false,
+            "thumbnailUrl":"https://s3-ap-southeast-1.amazonaws.com/photo.wongnai.com/photos/2016/04/02/dca982c7691e4c539b695dab73d37b14-t.jpg",
+            "photoUrl":"https://s3-ap-southeast-1.amazonaws.com/photo.wongnai.com/photos/2016/04/02/dca982c7691e4c539b695dab73d37b14-s.jpg",
+            "largeUrl":"https://s3-ap-southeast-1.amazonaws.com/photo.wongnai.com/photos/2016/04/02/dca982c7691e4c539b695dab73d37b14.jpg",
+            "profilePicture":{
+                "thumbnailUrl":"https://s3-ap-southeast-1.amazonaws.com/photo.wongnai.com/photos/2016/04/02/dca982c7691e4c539b695dab73d37b14-t.jpg",
+                "smallUrl":"https://s3-ap-southeast-1.amazonaws.com/photo.wongnai.com/photos/2016/04/02/dca982c7691e4c539b695dab73d37b14-s.jpg",
+                "largeUrl":"https://s3-ap-southeast-1.amazonaws.com/photo.wongnai.com/photos/2016/04/02/dca982c7691e4c539b695dab73d37b14.jpg",
+                "uploaded":true
+            },
+            "profilePictureLayers":[
+                "static/5.7.0/user/common/images/profile-elite.png"
+            ],
+            "rank":{
+                "name":"Wongnai Elite '16",
+                "value":10,
+                "url":"ranks/10",
+                "iconUrl":"static/5.7.0/user/common/images/rank/rank-10-32.png"
+            },
+            "joinTime":{
+                "iso":"2012-08-07T23:32:28+07:00",
+                "full":"อ., 7 ส.ค. 2012 23:32:28",
+                "timePassed":"7 ส.ค. 2012"
+            },
+            "statistic":{
+                "numberOfTopics":1,
+                "numberOfTopicComments":40,
+                "numberOfReviews":570,
+                "numberOfRatings":570,
+                "numberOfChallenges":77,
+                "numberOfFirstReviews":84,
+                "numberOfEditorialReviews":0,
+                "numberOfQualityReviews":571,
+                "numberOfReviewLikes":10644,
+                "numberOfEditorChoiceReviews":22,
+                "numberOfPhotoLikes":80234,
+                "numberOfPhotos":6074,
+                "numberOfFollowing":64,
+                "numberOfFollowers":11488,
+                "numberOfCheckins":616,
+                "numberOfMarkAsBeenHeres":0,
+                "numberOfUniqueCheckins":518,
+                "numberOfCoins":95980,
+                "numberOfLists":77,
+                "numberOfUnreadNotifications":24,
+                "numberOfNotifications":117278,
+                "numberOfUnreadMessages":0,
+                "numberOfUnreadChallenge":0,
+                "points":95980
+            },
+            "userUrl":"users/c08b2776067a4026b882abfc6fca8330",
+            "numberOfReviews":570,
+            "numberOfEditorialReviews":0,
+            "numberOfReviewLikes":10644,
+            "numberOfPhotoLikes":80234,
+            "numberOfPhotos":6074,
+            "numberOfFollowing":64,
+            "numberOfFollowers":11488,
+            "numberOfCoins":95980,
+            "aboutMe":"One can't think well, love well, sleep well, If one has not dined well. ig : dow_sirirak"
+        },
+        "uploadedTime":{
+            "iso":"2015-03-13T22:33:05+07:00",
+            "full":"ศ., 13 มี.ค. 2015 22:33:05",
+            "timePassed":"13 มี.ค. 2015"
+        },
+        "numberOfComments":0,
+        "commentDisabled":false,
+        "numberOfLikes":26,
+        "numberOfDislikes":0,
+        "photoVote":{
+            "like":false,
+            "dislike":false
+        },
+        "source":{
+            "id":2,
+            "name":"Wongnai for iOS"
+        },
+        "businessUrl":"restaurants/147586bD-gyu-gyu-tei-%E0%B9%80%E0%B8%A5%E0%B8%B5%E0%B8%A2%E0%B8%9A%E0%B8%97%E0%B8%B2%E0%B8%87%E0%B8%94%E0%B9%88%E0%B8%A7%E0%B8%99-%E0%B8%A5%E0%B8%B2%E0%B8%94%E0%B8%9E%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%A7-88-%E0%B8%A3%E0%B8%B2%E0%B8%A1%E0%B8%AD%E0%B8%B4%E0%B8%99%E0%B8%97%E0%B8%A3%E0%B8%B2",
+        "uploadedDate":"Fri Mar 13 22:33:05 ICT 2015"
+    },
+    "distinctDeals":[
+
+    ],
+    "goodForFoodOrdering":false,
+    "dealsUrl":"restaurants/147586bD-gyu-gyu-tei-%E0%B9%80%E0%B8%A5%E0%B8%B5%E0%B8%A2%E0%B8%9A%E0%B8%97%E0%B8%B2%E0%B8%87%E0%B8%94%E0%B9%88%E0%B8%A7%E0%B8%99-%E0%B8%A5%E0%B8%B2%E0%B8%94%E0%B8%9E%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%A7-88-%E0%B8%A3%E0%B8%B2%E0%B8%A1%E0%B8%AD%E0%B8%B4%E0%B8%99%E0%B8%97%E0%B8%A3%E0%B8%B2/deals",
+    "ranking":{
+        "rank":4,
+        "numberOfBusinesses":18,
+        "text1":"อันดับ #4 จาก 18",
+        "text2":"ร้านเนื้อย่าง บาร์บีคิว ในเขตวังทองหลาง",
+        "searchQuery":{
+            "name":"ร้านเนื้อย่าง บาร์บีคิว ในเขตวังทองหลาง",
+            "url":"rankings?category=43&region=199",
+            "path":"rankings",
+            "params":[
+                {
+                    "name":"category",
+                    "value":"43"
+                },
+                {
+                    "name":"region",
+                    "value":"199"
+                }
+            ]
+        }
+    },
+    "rating":4.198412698412699,
+    "numberOfReviews":17,
+    "numberOfEditorialReviews":0,
+    "numberOfPhotos":112,
+    "address":"ถนนประดิษฐมนูญธรรม",
+    "hint":"อยู่ด้านในปั๊ม",
+    "city":"",
+    "restaurantUrl":"restaurants/147586bD-gyu-gyu-tei-%E0%B9%80%E0%B8%A5%E0%B8%B5%E0%B8%A2%E0%B8%9A%E0%B8%97%E0%B8%B2%E0%B8%87%E0%B8%94%E0%B9%88%E0%B8%A7%E0%B8%99-%E0%B8%A5%E0%B8%B2%E0%B8%94%E0%B8%9E%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%A7-88-%E0%B8%A3%E0%B8%B2%E0%B8%A1%E0%B8%AD%E0%B8%B4%E0%B8%99%E0%B8%97%E0%B8%A3%E0%B8%B2",
+    "callablePhoneno":"0812916666021167865",
+    "phoneno":"08-12916666/ 02-116-7865",
+    "homepage":"http://gyugyuteibbq.com",
+    "parking":"มีที่จอดรถ",
+    "alcohol":[
+        "ไวน์",
+        "เบียร์"
+    ]
+}
