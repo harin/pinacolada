@@ -24,11 +24,9 @@ router.post('/callback', function(req, res) {
 			var text = result.content.text;
 			bc.sendText(sender, 'You sent me ' + text);
 		}
-	
+		
 	});
 
-	
-	
 
 });
 
