@@ -5,18 +5,26 @@ var pml = require('./lib/pml')
 
 var user = { w: {}};
 
-wongnai().then(function(data) {
+wongnai({
+  nationality: ['japanese'],
+  price: [250]
+}).then(function(data) {
   //learn from input
+  /*
   pml.learnInput({
     nationality: ['japanese', 'italian']
-  }, user); //positive
+  }, user, +3); //positive
+
+
   pml.learnInput({
     nationality: ['indian']
-  }, user, -1); //negative
+  }, user, -3); //negative*/
   
+  //learn from visited restaurant training
   pml.learnRestaurant(data[0], user);
   pml.learnRestaurant(data[1], user);
-
+  pml.learnRestaurant(data[2], user);
+  console.log(user.w);
   console.log(pml.output(user));
 })
 
