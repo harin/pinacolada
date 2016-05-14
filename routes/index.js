@@ -191,11 +191,18 @@ router.post('/training', function(req,res){
 	
 	console.log(xdict, 'xdict');
 	
-	if(ah['nationality'].length > 0){
-		answer = _.capitalize(ah['nationality']) + ' food';
-	}else if(ah['food'].length > 0){
-		answer = _.capitalize(ah['food']);
-	}
+	var stuff = [];
+	_.forOwn(xdict, function(v,k) {
+		_.forOwn(v, function(v2, k2) {
+			if(k2 == 'nationality') {
+				stuff.push(_.capitalize(v2 + ' food'));
+			} else {
+				stuff.push(_.capitalize(v2));
+			}
+		});
+	});
+	
+	answer = stuff[_.floor(Math.random() * stuff.length)]
 	
 	bc.sendText([mid], "You seem to like " + (answer));
 
