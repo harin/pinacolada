@@ -202,7 +202,8 @@ router.post('/callback', function(req, res) {
 		if (userState[fromMID].suggestedCount >= 3) {
 			console.log(userState[fromMID].suggestedCount);
 			msg = "You're TOO hard to please! I'M DONE!"
-			return sendText([fromMID], msg);
+			sendText([fromMID], msg);
+			return res.send('OK');
 		}
 
 		if (currentState === 'WAIT_LOCATION' && !isLocation) {
@@ -212,7 +213,7 @@ router.post('/callback', function(req, res) {
 			return res.send('OK');
 		}
 
-		console.log('isLocation =',isLocation);
+		console.log('isLocation=',isLocation);
 		console.log('currentState=',currentState);
 
 		if (isLocation) {
