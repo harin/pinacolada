@@ -3,9 +3,9 @@ var router = express.Router();
 var bc = require('../lib/bc');
 var _ = require('lodash');
 var Unakul = require('../lib/unakul');
-Unakul.setSayCallback(function(err, sender, msg){
+Unakul.callback = function(err, sender, msg){
 	bc.sendText([sender], msg);
-});
+};
 
 router.get('/', function(req,res){
 	res.send('PIN is up.');
