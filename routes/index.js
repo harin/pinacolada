@@ -175,10 +175,11 @@ router.post('/training', function(req,res){
 		output[score].push(genre);
 	}
 	
-	bc.sendText([mid], "That's very interesting. ");
-	MEMORY[mid] = user;
 	
-	res.send('tinder done');
+	MEMORY[mid] = user;
+	bc.sendText([mid], "That's very interesting.");
+	
+	res.send('tinder done', output);
 });
 
 router.post('/test', function(req,res){
