@@ -14,22 +14,41 @@
 <div>
   <% for(var i=0; i< foods.length; i++) {%>
     <div class="thumbsquare" style="background-image: url(https://i.ytimg.com/vi/ETTyVQrUZt8/maxresdefault.jpg); background-size: auto 100%">
-        <div class="liked">
-             <img src="/img/Heart.png" style="height: 50px !important; width:50px; margin: auto" alt=""/>
+        <div class="liked" data-cat="<%= foods[i] %>">
+             <img src="/img/Heart.png" style="opacity: 0.95; height: 50px !important; margin: auto" alt=""/>
         </div>
     </div>
   <% } %>
 </div>
-<div class="successbtn">
-    <h3>Done</h3>
+<div onclick="done()" class="successbtn">
+   <h3>Done</h3>
 </div>
 <script>
+    var likeness = {
+        
+    };
+    
+    function done(){
+        console.log(likeness);
+    }
+    
     $(document).ready(function(){
         $(".thumbsquare").height($(".thumbsquare").width());
-       // $(".thumbsquare img").height($(".thumbsquare").width());
+        
         $(".thumbsquare").click(function(c){
-           $(this).find(".liked").show();
+            var like = $(this).find(".liked");
+            like.show();
+            var dataCat = like.attr("data-cat");
+            if(likeness[dataCat] != 3) likeness[dataCat] = 1;
         });
+
+        $(".liked").click(function(c){
+           $(this).find("img").attr("src", "/img/HeartRed.png");
+           var dataCat = $(this).attr("data-cat");
+           likeness[dataCat] = 3;
+           console.log('setting to 3');
+        });
+
         $(".liked").hide();
     });
 </script>

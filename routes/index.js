@@ -110,6 +110,11 @@ router.get('/foodboard', function(req,res){
 	res.render('foodboard', {title: 'Foodboard', foods: combined})
 });
 
+router.post('/test', function(req,res){
+	//u1abe46713713ecbc8b66b04691c354f9
+	bc.sendLink(['u1abe46713713ecbc8b66b04691c354f9'], 'xx');
+	res.send('ok');
+});
 
 /* GET home page. */
 router.post('/callback', function(req, res) {
