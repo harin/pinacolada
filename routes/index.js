@@ -173,7 +173,7 @@ var textToAction = function(mid, text, state) {
 var askFeedback = function(mid) {
 	userState[mid].waitingForFeedback = false;
 	msg = 'Do you like the restaurant I suggested?';
-	sendText(mid, msg);
+	sendText([mid], msg);
 }
 
 var respondForState = function(mid, state) {
