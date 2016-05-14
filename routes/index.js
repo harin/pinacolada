@@ -135,7 +135,10 @@ router.post('/callback', function(req, res) {
 				//Plain Text
 				var text = result.content.text;
 				var TEXT = text.toUpperCase();
-				if (MOVES.indexOf(TEXT) > 0) {
+				console.log('text = ' + text);
+				console.log ('TEXT = ' + TEXT);
+				console.log('indexOf = ' + MOVES.indexOf(TEXT));
+				if (MOVES.indexOf(TEXT) >= 0) {
 					console.log('command detected, moving with ' + TEXT);
 					newState = fsm.clockNext(fromMID, TEXT);
 					console.log(fromMID, ' switched from ', currentState, ' to ', newState);
@@ -152,10 +155,6 @@ router.post('/callback', function(req, res) {
 				client.message(text, {}, function(err, data){
 					var en = data.entities;
 					console.log(JSON.stringify(data, null, 2));
-					// var keys = Object.keys(en).map(function(val) {
-					// 	return val.toUpperCase();
-					// });
-
 					keys = [getMove(currentState)];
 					console.log('moving with ', keys);
 					if (keys.length > 0) {
