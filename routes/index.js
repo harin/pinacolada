@@ -150,6 +150,11 @@ var respondForState = function(mid, state) {
 	} else if (state === 'WAIT_LOCATION') {
 		msg = 'Send me your location'; 
 	} else if (state === 'SUGGEST') {
+
+
+
+
+
 		// build query from user state
 		var state = userState[mid];
 		var query = sampleQuery;
@@ -161,9 +166,12 @@ var respondForState = function(mid, state) {
 			var obj = _.pick(state, VALID_Q_ATTRIBUTES);
 			query = _.merge(query, obj);
 		}
+		var passQuery = MEMORY[mid] || { w: {} };
+		learnedQuery = learnInput(query, passQuery);		
+		MEMORY[mid] = learnedQuery;
 
-		console.log('querying wongnai with ' + query);
-		return queryWongnai(query).then(function(data){
+		console.log('querying wongnai with ' + learnedQuery);
+		return queryWongnai(learnedQuery).then(function(data){
 			var rest = null;
 			if (userState[mid].suggestedCount == 0) {
 				rest = data[0];
@@ -211,33 +219,28 @@ router.get('/foodboard', function(req,res){
 	var foods = Object.keys(wongnaiEnum.raw.food);
 	var nationalities = Object.keys(wongnaiEnum.raw.nationality);
 	var combined = _.concat(foods, nationalities);
+	var mid = req.query.mid;
 	
-	for(var i = 0; i < combined.length; i++){
-		// getty.getRandom("dish food " + combined[i]).then(function(data){ 
-			
-		// })
-	}
-	
-	res.render('foodboard', {title: 'Foodboard', foods: combined})
+	res.render('foodboard', {title: 'Foodboard', foods: combined, mid: mid})
 });
 
 router.post('/training', function(req,res){
-	var body = req.body;
-	var objectKeys = Object.keys(req.body);
+	var objectKeys = Object.keys(req.body.likeness);
 	var output = {1: [], 3:[]};
-	var mid = "0";
+	var mid = req.body.mid;
 	var user = MEMORY[mid] || { w: {} };
 	
 	pml.learnTinder(output, user);
 	
 	for(var i = 0; i < objectKeys.length; i++){
 		var genre = objectKeys[i];
-		var score = req.body[genre];
+		var score = req.body.likeness[genre];
 		output[score].push(genre);
 	}
 	
+	bc.sendText([mid], "That's very interesting. ");
 	MEMORY[mid] = user;
-	console.log(req.body);
+	res.send('tinder done');
 });
 
 router.post('/test', function(req,res){
@@ -295,8 +298,8 @@ router.post('/callback', function(req, res) {
 			return res.send('OK');
 		}
 
-		console.log('isLocation=',isLocation);
-		console.log('currentState=',currentState);
+		console.log('isLocation =', isLocation);
+		console.log('currentState =', currentState);
 
 		if (isLocation) {
 			var location = result.content.location;
@@ -307,7 +310,7 @@ router.post('/callback', function(req, res) {
 			});
 			respondForState(fromMID, newState);
 			console.log(fromMID, ' switched from ', currentState, ' to ', newState);
-			return res.send('OK')
+			return res.send('OK');
 		} else {
 			//Plain Text
 			var text = result.content.text;

@@ -28,16 +28,24 @@
         
     };
     
+    
     function done(){
         console.log(likeness);
         $.ajax({
             url: '/training',
             type: 'post',
-            data: likeness,
+            data: {
+             mid: '<%= mid %>',
+             likeness:   likeness
+            },
             success: function(data){
                 console.log(data, 'pin spam');
+            },
+            error: function(x){
+                console.log('err', x);
             }
         });
+        window.location.href = "line://ch/1466974614";
     }
     
     $(document).ready(function(){
