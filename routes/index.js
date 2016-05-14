@@ -91,8 +91,12 @@ router.post('/callback', function(req, res) {
 			client.message(text, {}, function(err, data){
 				var en = data.entities;
 				console.log(JSON.stringify(data, null, 2));
-				var keys = Object.keys(en);
+				var keys = Object.keys(en).map(function(val) {
+					return val.toUpperCase();
+				});
 				var object = {};
+
+				console.log('moving with ', keys);
 				var newState = fsm.clockNext(fromMID, keys);
 				console.log(fromMID, ' switched from ', currentState, ' to ', newState);
 
