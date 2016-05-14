@@ -182,15 +182,17 @@ router.post('/training', function(req,res){
 	
 	var xdict = pml.parseTinder(output);
 	var ah = (xdict['3'] || xdict['1']);
-	var answer = 'nothing';
+	var answer = 'nothing in particular..';
 	
-	if(ah['nationality'].length >0){
-		answer = ah['nationality'] + ' food';
-	}else if(ah['food'].length >0){
-		answer = ah['food'];
+	console.log(xdict, 'xdict');
+	
+	if(ah['nationality'].length > 0){
+		answer = _.capitalize(ah['nationality']) + ' food';
+	}else if(ah['food'].length > 0){
+		answer = _.capitalize(ah['food']);
 	}
 	
-	bc.sendText([mid], "You seem to like " + _.capitalize(answer));
+	bc.sendText([mid], "You seem to like " + (answer));
 
 	res.send('tinder done', output);
 });
