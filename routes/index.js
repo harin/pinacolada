@@ -43,7 +43,7 @@ var respondForState = function(mid, state) {
 	} else if (state === 'DONT_UNDERSTAND') {
 		msg = "Sorry, I don't understand."
 	}
-	
+
 	console.log("sending ", msg, " to ", mid);
 	bc.sendText([mid], msg);
 }
@@ -51,6 +51,7 @@ var respondForState = function(mid, state) {
 var updateState = function(mid, object) {
 	if (!userState[mid]) userState[mid] = {};
 	_.merge(userState[mid], object);
+	console.log(userState[mid]);
 }
 
 router.get('/', function(req,res){
@@ -63,50 +64,49 @@ router.post('/callback', function(req, res) {
 	console.log('called back', JSON.stringify(req.body.result,null,2));
 	
 	for(var i = 0 ;i < req.body.result.length; i++){
-		var result = req.body.result[i];
-		var isLocation = _.has(result.content, 'location.latitude');
-		var fromMID = result.content.from;
-		var currentState = fsm.getState(fromMID);
+		try {
+			var result = req.body.result[i];
+			var isLocation = _.has(result.content, 'location.latitude');
+			var fromMID = result.content.from;
+			var currentState = fsm.getState(fromMID);
+			var newState = null;
 
-		if (currentState === 'WAIT_LOCATION' && !isLocation) {
-			// ask user for location
-			bc.sendText(fromMID, "I'm waiting for your location :/");
-			return res.send('OK');
-		}
+			if (currentState === 'WAIT_LOCATION' && !isLocation) {
+				// ask user for location
+				bc.sendText(fromMID, "I'm waiting for your location :/");
+				return res.send('OK');
+			}
 
-		if (isLocation){
-			var location = result.content.location;
-			respondForState(fromMID, currentState);
-			// bc.sendText(sender, 'You sent me a location ' +
-			//  location.latitude + ", " 
-			//  + location.longitude);
-		} else {
-
-			//Plain Text
-			var text = result.content.text;
-
-			// keys = [text.toUpperCase()];
-			// var newState = fsm.clockNext(fromMID, keys);
-			// respondForState(fromMID, newState);
-			// updateState(fromMID, object);
-			// console.log(fromMID, ' switched from ', currentState, ' to ', newState);
-			// return res.send('OK');
-
-			client.message(text, {}, function(err, data){
-				var en = data.entities;
-				console.log(JSON.stringify(data, null, 2));
-				var keys = Object.keys(en).map(function(val) {
-					return val.toUpperCase();
+			if (isLocation && currentState === 'WAIT_LOCATION'){
+				var location = result.content.location;
+				respondForState(fromMID, currentState);
+				newState = fsm.clockNext(fromMID, ['LOCATION']);
+				updateState(fromMID, {
+					location: location
 				});
-				var object = {};
+				// bc.sendText(sender, 'You sent me a location ' +
+				//  location.latitude + ", " 
+				//  + location.longitude);
+			} else {
 
-				console.log('moving with ', keys);
-				var newState = fsm.clockNext(fromMID, keys);
-				console.log(fromMID, ' switched from ', currentState, ' to ', newState);
-
-				respondForState(fromMID, newState);
-				updateState(fromMID, object);
-			});
+				//Plain Text
+				var text = result.content.text;
+				client.message(text, {}, function(err, data){
+					var en = data.entities;
+					console.log(JSON.stringify(data, null, 2));
+					var keys = Object.keys(en).map(function(val) {
+						return val.toUpperCase();
+					});
+					var object = {};
+					console.log('moving with ', keys);
+					newState = fsm.clockNext(fromMID, keys);
+					// updateState(fromMID, object);
+				});
+			}
+			console.log(fromMID, ' switched from ', currentState, ' to ', newState);
+			respondForState(fromMID, newState);
+		} catch (err) {
+			console.error(err.stack);
 		}
 	}
 	
