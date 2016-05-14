@@ -181,7 +181,12 @@ router.post('/training', function(req,res){
 	bc.sendText([mid], "That's very interesting.");
 	
 	var xdict = pml.parseTinder(output);
-	var ah = (xdict['3'] || xdict['1']);
+	var ah = xdict['3'];
+	
+	if(ah.length == 0){
+		ah = xdict['1'];
+	}
+	
 	var answer = 'nothing in particular..';
 	
 	console.log(xdict, 'xdict');
