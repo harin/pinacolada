@@ -269,6 +269,8 @@ router.get('/foodboard', function(req,res){
 	var combined = _.concat(foods, nationalities);
 	var mid = req.query.mid;
 	
+	combined = _.pull(combined, 'international', 'others', 'quick meal', 'beverage');
+
 	res.render('foodboard', {title: 'Foodboard', foods: combined, mid: mid})
 });
 
@@ -285,10 +287,41 @@ router.post('/training', function(req,res){
 		var score = req.body.likeness[genre];
 		output[score].push(genre);
 	}
-	
-	bc.sendText([mid], "That's very interesting. ");
+
 	MEMORY[mid] = user;
-	res.send('tinder done');
+	bc.sendText([mid], "That's very interesting.");
+	
+	var xdict = pml.parseTinder(output);
+	var ah = xdict['3'];
+	
+	if(ah['nationality'].length == 0 && ah['food'].length == 0){
+		ah = xdict['1'];
+	}
+	
+	var answer = 'nothing in particular..';
+	
+	console.log(xdict, 'xdict');
+	
+	var stuff = [];
+	_.forOwn(xdict, function(v,k) {
+		_.forOwn(v, function(v2, k2) {
+			_.forEach(v2, function(e) {
+				if(k2 == 'nationality') {
+					stuff.push(_.capitalize(e + ' food'));
+				} else {
+					stuff.push(_.capitalize(e));
+				}
+			});
+		});
+	});
+	
+	answer = stuff[_.floor(Math.random() * stuff.length)]
+	
+	console.log(stuff, 'stuff');
+	
+	bc.sendText([mid], "You seem to like " + (answer));
+
+	res.send('tinder done', output);
 });
 
 router.post('/test', function(req,res){
