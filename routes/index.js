@@ -17,7 +17,6 @@ if (process.env.NODE_ENV === 'production') {
 	DEBUG = false;
 }
 
-
 var sampleQuery = {
   "latitude": 10.000033,
   "longitude": 12.0003,
@@ -57,11 +56,11 @@ var getMove = function(currentState) {
 	}
 }
 
-var sendText = function(mid, msg) {
+var sendText = function(mids, msg) {
 	if (DEBUG) {
-		console.log([mid], msg);
+		console.log(mids, msg);
 	} else {
-		bc.sendText([mid], msg);
+		bc.sendText(mids, msg);
 	}
 }
 
@@ -203,7 +202,7 @@ router.post('/callback', function(req, res) {
 		if (userState[fromMID].suggestedCount >= 3) {
 			console.log(userState[fromMID].suggestedCount);
 			msg = "You're TOO hard to please! I'M DONE!"
-			return sendText(fromMID, msg);
+			return sendText([fromMID], msg);
 		}
 
 		if (currentState === 'WAIT_LOCATION' && !isLocation) {
