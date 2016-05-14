@@ -9,7 +9,7 @@
   "parking": ["no parking"],
   "sort": "best match",
   "open": true,
-  "discount": true,
+  "discount": false,
   "page": {
     "number": 2, //start with 1
     "size": 20
