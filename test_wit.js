@@ -1,5 +1,6 @@
 var TOKEN = 'MMNPQLFQYGLDFG2FN7W5FYCI5L5EZZJR'; // pinacolada
 
+if (process.argv.length < 3) process.exit();
 
 var Logger = require('node-wit').Logger;
 var levels = require('node-wit').logLevels;
@@ -43,25 +44,14 @@ var actions = {
     context.aGreeting = _.sample(sample);
     cb(context);
   }
-
 };
 var client = new Wit(TOKEN, actions, logger);
-unakul = {
-  receiveMessage: function(msg, sessionId) {
-    console.log('receivedMessage: ');
-    if (typeof context === 'undefined' || context === null) context = {};
-    client.runActions(sessionId, msg, context, (error, data) => {
-      if (error) {
-        console.log('Oops! Got an error: ' + error);
-      } else {
-        console.log('Yay, got Wit.ai response: ' + JSON.stringify(data));
-      } 
-    });
-  },
-  client: client,
-  callback: null
-};
 
-
-
-module.exports = unakul; 
+var context = {};
+client.message(process.argv[2], context, (error, data) => {
+  if (error) {
+    console.log('Oops! Got an error: ' + error);
+  } else {
+    console.log('Yay, got Wit.ai response: ' + JSON.stringify(data));
+  }
+});
