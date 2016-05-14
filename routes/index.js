@@ -5,6 +5,8 @@ var Promise = require('bluebird');
 var bc = require('../lib/bc');
 var _ = require('lodash');
 var wongnaiEnum = require('../lib/wongnai/enum.js');
+var getty = require('../lib/getty');
+
 var fsm = require('../lib/fsm');
 var client = require('../lib/wit_client');
 var queryWongnai = require('../lib/wongnai/index.js');
@@ -145,9 +147,18 @@ router.get('/', function(req,res){
 });
 
 router.get('/foodboard', function(req,res){
-	var foods = [1,2,3,45,55];
-	console.log(wongnaiEnum.raw.food);
-	res.render('foodboard', {title: 'Foodboard', foods: foods})
+	var foods = Object.keys(wongnaiEnum.raw.food);
+	var nationalities = Object.keys(wongnaiEnum.raw.nationality);
+	var combined = _.concat(foods, nationalities);
+	console.log(combined);
+	
+	for(var i = 0; i < combined.length; i++){
+		// getty.getRandom("dish food " + combined[i]).then(function(data){ 
+			
+		// })
+	}
+	
+	res.render('foodboard', {title: 'Foodboard', foods: combined})
 });
 
 /* GET home page. */
