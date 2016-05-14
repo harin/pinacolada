@@ -1,22 +1,25 @@
 var express = require('express');
 var router = express.Router();
+var Promise = require('bluebird');
+
 var bc = require('../lib/bc');
 var _ = require('lodash');
-var Unakul = require('../lib/unakul');
 var wongnaiEnum = require('../lib/wongnai/enum.js');
 var getty = require('../lib/getty');
 var pml = require('../lib/pml');
 
 var MEMORY = {};
 
-Unakul.callback = function(err, sender, msg){
-	bc.sendText([sender], msg);
-};
-
 var fsm = require('../lib/fsm');
 var client = require('../lib/wit_client');
 var queryWongnai = require('../lib/wongnai/index.js');
 var userState = {};
+
+var DEBUG = true;
+if (process.env.NODE_ENV === 'production') {
+	DEBUG = false;
+}
+
 
 var sampleQuery = {
   "latitude": 10.000033,
@@ -57,6 +60,38 @@ var getMove = function(currentState) {
 	}
 }
 
+var sendText = function(mid, msg) {
+	if (DEBUG) {
+		console.log([mid], msg);
+	} else {
+		bc.sendText([mid], msg);
+	}
+}
+
+var textToAction = function(text, state) {
+	return new Promise(function(resolve, reject) {
+		var TEXT = text.toUpperCase();
+		console.log ('TEXT = ' + TEXT);
+		if (MOVES.indexOf(TEXT) >= 0) {
+			return resolve([TEXT]);
+		}
+
+		if (text.match(/hi pin/i)){
+			console.log('matched hi pin');
+			return resolve(['RESET']);
+		}
+
+		client.message(text, {}, function(err, data){
+			var en = data.entities;
+			console.log(JSON.stringify(data, null, 2));
+			keys = [getMove(state)];
+			if (keys.length > 0) {
+				return resolve(keys);
+			}
+		});
+	});
+}
+
 var respondForState = function(mid, state) {
 	var msg = null;
 	if (state === 'IDLE') {
@@ -75,21 +110,41 @@ var respondForState = function(mid, state) {
 		}
 		console.log('querying wongnai with ' + query);
 		return queryWongnai(query).then(function(data){
-			var firstRest = data[0];
-			var url = "http://www.wongnai.com/" + firstRest.url;
+			var rest = null;
+			if (userState[mid].suggestedCount == 0) {
+				rest = data[0];
+			} else {
+				rest = _.sample(data);
+			}
+			var url = "http://www.wongnai.com/" + rest.url;
 			var msg = "Why don't you do eat at " + url;
-			bc.sendText([mid], msg);
+			sendText([mid], msg);
+			userState[mid].suggestedCount++;
+			return null;
+		})
+		.catch(function(err) {
+			console.error(err.stack);
+			return null;
 		});
 	} else if (state === 'DONT_UNDERSTAND') {
 		msg = "Sorry, I don't understand."
 	}
 
 	console.log("sending ", msg, " to ", mid);
-	bc.sendText([mid], msg);
+	sendText([mid], msg);
+	return null;
 }
 
-var updateState = function(mid, object) {
-	if (!userState[mid]) userState[mid] = {};
+var ensureUserState = function(mid) {
+	if (!userState[mid]) {
+		userState[mid] = {
+			suggestedCount: 0
+		}
+	}
+}
+
+var updateUserState = function(mid, object) {
+	ensureUserState(mid);
 	_.merge(userState[mid], object);
 	console.log(userState[mid]);
 }
@@ -143,71 +198,88 @@ router.post('/callback', function(req, res) {
 	
 	console.log('called back', JSON.stringify(req.body.result,null,2));
 	
-	for(var i = 0 ;i < req.body.result.length; i++){
-		try {
-			var result = req.body.result[i];
-			var isLocation = _.has(result.content, 'location.latitude');
-			var fromMID = result.content.from;
-			var currentState = fsm.getState(fromMID);
-			var newState = currentState;
-
-			if (currentState === 'WAIT_LOCATION' && !isLocation) {
-				// ask user for location
-				bc.sendText([fromMID], "I'm waiting for your location :/");
-				return res.send('OK');
-			}
-
-			if (isLocation && currentState === 'WAIT_LOCATION'){
-
-				var location = result.content.location;
-				respondForState(fromMID, currentState);
-				newState = fsm.clockNext(fromMID, ['LOCATION']);
-				updateState(fromMID, {
-					location: location
-				});
-				respondForState(fromMID, newState);
-				console.log(fromMID, ' switched from ', currentState, ' to ', newState);
-			} else {
-
-				//Plain Text
-				var text = result.content.text;
-				var TEXT = text.toUpperCase();
-				console.log('text = ' + text);
-				console.log ('TEXT = ' + TEXT);
-				console.log('indexOf = ' + MOVES.indexOf(TEXT));
-				if (MOVES.indexOf(TEXT) >= 0) {
-					console.log('command detected, moving with ' + TEXT);
-					newState = fsm.clockNext(fromMID, TEXT);
-					console.log(fromMID, ' switched from ', currentState, ' to ', newState);
-					respondForState(fromMID, newState);
-					return res.send('OK');
+	// create mock line response
+	if (DEBUG) {
+		req.body.result = [
+			{
+				content: {
+					from: '123'
 				}
-
-				if (text.match(/hi pin/i)){
-					console.log('reseting fsm for ', fromMID);
-					newState = fsm.clockNext(fromMID, 'RESET');
-					console.log(fromMID, ' switched from ', currentState, ' to ', newState);
-					return res.send('OK');
-				}
-
-				client.message(text, {}, function(err, data){
-					var en = data.entities;
-					console.log(JSON.stringify(data, null, 2));
-					keys = [getMove(currentState)];
-					console.log('moving with ', keys);
-					if (keys.length > 0) {
-						newState = fsm.clockNext(fromMID, keys);
-					}
-					respondForState(fromMID, newState);
-					console.log(fromMID, ' switched from ', currentState, ' to ', newState);
-				});
 			}
-		} catch (err) {
-			console.error(err.stack);
+		]
+
+		if (req.body.text) {
+			req.body.result[0].content.text = req.body.text;
 		}
+
+		if (req.body.location) {
+			req.body.result[0].content.location = req.body.location;
+		}
+
+		console.log(JSON.stringify(req.body,null,2));
 	}
-	
-	res.send('OK');
+
+	try {
+		var result = req.body.result[0];
+		var isLocation = _.has(result.content, 'location.latitude');
+		var fromMID = result.content.from;
+		var currentState = fsm.getState(fromMID);
+		var newState = currentState;
+
+		ensureUserState(fromMID);
+
+		if (userState[fromMID].suggestedCount >= 3) {
+			console.log(userState[fromMID].suggestedCount);
+			msg = "You're TOO hard to please! I'M DONE!"
+			return sendText(fromMID, msg);
+		}
+
+		if (currentState === 'WAIT_LOCATION' && !isLocation) {
+			msg = "I'm waiting for your location :(";
+			// ask user for location
+			sendText([fromMID], msg);
+			return res.send('OK');
+		}
+
+		console.log('isLocation =',isLocation);
+		console.log('currentState=',currentState);
+
+		if (isLocation) {
+			var location = result.content.location;
+			newState = fsm.clockNext(fromMID, ['LOCATION']);
+			console.log('newState=', newState);
+			updateUserState(fromMID, {
+				location: location
+			});
+			respondForState(fromMID, newState);
+			console.log(fromMID, ' switched from ', currentState, ' to ', newState);
+			return res.send('OK')
+		} else {
+			//Plain Text
+			var text = result.content.text;
+			textToAction(text, currentState)
+			.then(function(actions){
+
+				if (actions.indexOf('SATISFIED') >= 0) {
+					// reset suggested count
+					userState[fromMID].suggestedCount = 0;
+				}
+
+				console.log('actions = ' + actions);
+				newState = fsm.clockNext(fromMID, actions);
+				console.log(fromMID, ' switched from ', currentState, ' to ', newState);
+				respondForState(fromMID, newState);
+				res.send('OK');
+			})
+			.catch(function(err){
+				console.error(err.stack);
+				res.sendStatus(500);
+			});
+		}
+	} catch (err) {
+		console.error(err.stack);
+		res.sendStatus(500);
+	}
 });
 
 module.exports = router;
