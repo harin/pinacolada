@@ -1,0 +1,36 @@
+<% include header %>
+
+<div style="padding: 20px;">
+    <div>
+        <img src="/img/pin_big.png" style="height: 80px">
+    </div>
+    <div>
+        <img src="/img/linebub.png" style="max-height:50px; margin-top: 20px;">
+    </div>
+</div>
+<div style="font-size: small; color: grey; margin: auto; padding-left: 30px; padding-bottom:15px"> 
+    Tap once on the food you LIKE, tap twice for food you LOVE. This will help me get to know you better.
+</div>
+<div>
+  <% for(var i=0; i< foods.length; i++) {%>
+    <div class="thumbsquare" style="background-image: url(https://i.ytimg.com/vi/ETTyVQrUZt8/maxresdefault.jpg); background-size: auto 100%">
+        <div class="liked">
+             <img src="/img/Heart.png" style="height: 50px !important; width:50px; margin: auto" alt=""/>
+        </div>
+    </div>
+  <% } %>
+</div>
+<div class="successbtn">
+    <h3>Done</h3>
+</div>
+<script>
+    $(document).ready(function(){
+        $(".thumbsquare").height($(".thumbsquare").width());
+       // $(".thumbsquare img").height($(".thumbsquare").width());
+        $(".thumbsquare").click(function(c){
+           $(this).find(".liked").show();
+        });
+        $(".liked").hide();
+    });
+</script>
+<% include footer %>

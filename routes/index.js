@@ -2,6 +2,13 @@ var express = require('express');
 var router = express.Router();
 var bc = require('../lib/bc');
 var _ = require('lodash');
+var Unakul = require('../lib/unakul');
+var wongnaiEnum = require('../lib/wongnai/enum.js');
+
+Unakul.callback = function(err, sender, msg){
+	bc.sendText([sender], msg);
+};
+
 var fsm = require('../lib/fsm');
 var client = require('../lib/wit_client');
 var queryWongnai = require('../lib/wongnai/index.js');
@@ -85,6 +92,13 @@ var updateState = function(mid, object) {
 router.get('/', function(req,res){
 	res.send('PIN is up.');
 });
+
+router.get('/foodboard', function(req,res){
+	var foods = [1,2,3,45,55];
+	console.log(wongnaiEnum.raw.food);
+	res.render('foodboard', {title: 'Foodboard', foods: foods})
+});
+
 
 /* GET home page. */
 router.post('/callback', function(req, res) {
