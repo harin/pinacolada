@@ -3,6 +3,9 @@ var router = express.Router();
 var bc = require('../lib/bc');
 var _ = require('lodash');
 var Unakul = require('../lib/unakul');
+Unakul.callback = function(err, sender, msg){
+	bc.sendText([sender], msg);
+};
 
 router.get('/', function(req,res){
 	res.send('PIN is up.');
@@ -18,15 +21,13 @@ router.post('/callback', function(req, res) {
 		var sender = [result.content.from];
 		
 		if(isLocation){
-			var location = result.content.location;
-			bc.sendText(sender, 'You sent me a location ' + location.latitude + ", " + location.longitude);
+			// var location = result.content.location;
+			// bc.sendText(sender, 'You sent me a location ' + location.latitude + ", " + location.longitude);
+			// 
 		}else{
 			//Plain Text
 			var text = result.content.text;
-			Unakul.receiveMessage(text, result.content.from, function(err, resp){
-				bc.sendText(sender, resp);
-			});
-			
+			Unakul.receiveMessage(text, result.content.from);
 		}
 	}
 	
