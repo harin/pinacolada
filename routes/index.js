@@ -102,6 +102,8 @@ router.post('/callback', function(req, res) {
 				updateState(fromMID, {
 					location: location
 				});
+				respondForState(fromMID, newState);
+				console.log(fromMID, ' switched from ', currentState, ' to ', newState);
 
 			} else {
 
@@ -119,10 +121,12 @@ router.post('/callback', function(req, res) {
 					if (keys.length > 0) {
 						newState = fsm.clockNext(fromMID, keys);
 					}
+
+					respondForState(fromMID, newState);
+					console.log(fromMID, ' switched from ', currentState, ' to ', newState);
+
 				});
 			}
-			console.log(fromMID, ' switched from ', currentState, ' to ', newState);
-			respondForState(fromMID, newState);
 		} catch (err) {
 			console.error(err.stack);
 		}
