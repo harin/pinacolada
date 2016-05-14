@@ -159,7 +159,6 @@ router.get('/foodboard', function(req,res){
 	var mid = req.query.mid;
 	
 	combined = _.pull(combined, 'international', 'others', 'quick meal');
-	console.log(combined);
 
 	res.render('foodboard', {title: 'Foodboard', foods: combined, mid: mid})
 });
@@ -177,11 +176,11 @@ router.post('/training', function(req,res){
 		var score = req.body.likeness[genre];
 		output[score].push(genre);
 	}
-	
-	
+
 	MEMORY[mid] = user;
 	bc.sendText([mid], "That's very interesting.");
-	
+	bc.sendText([mid], "You seem to like " + (output[3] || output[1])[0]);
+
 	res.send('tinder done', output);
 });
 
