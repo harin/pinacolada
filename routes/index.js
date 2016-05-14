@@ -179,7 +179,18 @@ router.post('/training', function(req,res){
 
 	MEMORY[mid] = user;
 	bc.sendText([mid], "That's very interesting.");
-	bc.sendText([mid], "You seem to like " + _.capitalize((output[3] || output[1])[0]));
+	
+	var xdict = pml.parseTinder(output);
+	var ah = (xdict['3'] || xdict['1']);
+	var answer = 'nothing';
+	
+	if(ah['nationality'].length >0){
+		answer = ah['nationality'] + ' food';
+	}else if(ah['food'].length >0){
+		answer = ah['food'];
+	}
+	
+	bc.sendText([mid], "You seem to like " + _.capitalize(answer));
 
 	res.send('tinder done', output);
 });
