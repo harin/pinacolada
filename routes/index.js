@@ -3,8 +3,8 @@ var router = express.Router();
 var bc = require('../lib/bc');
 var _ = require('lodash');
 var Unakul = require('../lib/unakul');
-Unakul.setSayCallback(function(err, resp){
-	bc.sendText(sender, resp);
+Unakul.setSayCallback(function(err, sender, msg){
+	bc.sendText(sender, msg);
 });
 
 router.get('/', function(req,res){
