@@ -2,6 +2,10 @@ var express = require('express');
 var router = express.Router();
 var unirest = require('unirest');
 
+router.get('/', function(req,res){
+	res.send('PIN is up.');
+});
+
 /* GET home page. */
 router.post('/callback', function(req, res) {
 	console.log('called back', req.body.result);
