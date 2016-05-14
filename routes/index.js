@@ -42,6 +42,27 @@ var sampleQuery = {
 
 var MOVES = ['INQUIRY', 'LOCATION', 'SATISFIED', 'FEEDBACK'
 							, 'RESET', 'UNSATISFIED', 'SURPRISE', 'CUISINE'];
+var NORMAL_MOVES = ['INQUIRY', 'LOCATION', 'SATISFIED', 'FEEDBACK',
+										,'RESET', 'UNSATISFIED'];
+
+var VALID_QUERY_KEYS = [
+	'latitude', 'longitude', 'radius',
+	'nationality', 'food', 'business',
+	'alcohol', 'parking', 'sort',
+	'open', 'discount'
+]
+
+var VALID_Q_ATTRIBUTES = {
+	'nationality': [],
+	'food': [],
+	'business': [],
+	'alcohol' : [],
+	'parking': [],
+	'open': [],
+	'discount': []
+}
+
+var SUGGEST_LIMIT = 10;
 
 var getMove = function(currentState) {
 	if (currentState === 'IDLE') {
@@ -67,7 +88,7 @@ var sendText = function(mids, msg) {
 	}
 }
 
-var textToAction = function(text, state) {
+var textToAction = function(mid, text, state) {
 	return new Promise(function(resolve, reject) {
 		var TEXT = text.toUpperCase();
 		console.log ('TEXT = ' + TEXT);
@@ -81,12 +102,43 @@ var textToAction = function(text, state) {
 		}
 
 		client.message(text, {}, function(err, data){
-			var en = data.entities;
+			var entities = data.entities;
 			console.log(JSON.stringify(data, null, 2));
-			keys = [getMove(state)];
-			if (keys.length > 0) {
-				return resolve(keys);
+
+			keys = Object.keys(entities);
+			// keys = [getMove(state)];
+			if (state === 'SUGGEST') {
+				// build user overridden preference
+				if (keys.indexOf('UNSATISFIED')) {
+					obj = {}
+					keys.forEach(function(key) {
+						if (VALID_QUERY_KEYS.indexOf(key) >= 0) {
+
+							var entity = entities[key];
+							if (Array.isArray(entity)) {
+								obj[key] = entity.map(function(val){
+									if (typeof val.value === 'object') {
+										return val.value.value;
+									} else {
+										return val.value;
+									}
+								});
+							} else {
+								obj[key] = entities[key].value;
+							}
+						}
+					});
+					updateUserState(mid, obj);
+				}
 			}
+
+			keys = keys.map(function(key) {
+				return key.toUpperCase();
+			}).filter(function(key) {
+				return NORMAL_MOVES.indexOf(key) >= 0;
+			});
+
+			return resolve(keys);
 		});
 	});
 }
@@ -106,7 +158,10 @@ var respondForState = function(mid, state) {
 				latitude: state.location.latitude,
 				longitude: state.location.longitude
 			}
+			var obj = _.pick(state, VALID_Q_ATTRIBUTES);
+			query = _.merge(query, obj);
 		}
+
 		console.log('querying wongnai with ' + query);
 		return queryWongnai(query).then(function(data){
 			var rest = null;
@@ -182,7 +237,6 @@ router.post('/training', function(req,res){
 	}
 	
 	MEMORY[mid] = user;
-	
 	console.log(req.body);
 });
 
@@ -227,7 +281,7 @@ router.post('/callback', function(req, res) {
 
 		ensureUserState(fromMID);
 
-		if (userState[fromMID].suggestedCount >= 3) {
+		if (userState[fromMID].suggestedCount >= SUGGEST_LIMIT) {
 			console.log(userState[fromMID].suggestedCount);
 			msg = "You're TOO hard to please! I'M DONE!"
 			sendText([fromMID], msg);
@@ -257,9 +311,9 @@ router.post('/callback', function(req, res) {
 		} else {
 			//Plain Text
 			var text = result.content.text;
-			textToAction(text, currentState)
+			textToAction(fromMID, text, currentState)
 			.then(function(actions){
-
+				console.log('actions ',actions);
 				if (actions.indexOf('SATISFIED') >= 0) {
 					// reset suggested count
 					userState[fromMID].suggestedCount = 0;
