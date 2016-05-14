@@ -2,6 +2,10 @@ var express = require('express');
 var router = express.Router();
 var unirest = require('unirest');
 
+router.get('/', function(req,res){
+	res.send('PIN is up.');
+});
+
 /* GET home page. */
 router.post('/callback', function(req, res) {
 	console.log('called back', req.body.result);
@@ -10,11 +14,9 @@ router.post('/callback', function(req, res) {
 	var hello = "Hi I'm Pin. You said " + req.body.result[0]['content']['text'];
 	var frm = req.body.result[0].content.from;	
 
-	unirest.post('https://trialbot-api.line.me/v1/events')
+	unirest.post('https://api.line.me/v1/events')
 	.headers({ 'Content-Type' : 'application/json; charset=UTF-8', 
-		   'X-Line-ChannelID' : '1466986405',
-		   'X-Line-ChannelSecret': '49dfcac9951abf6c6027c078065c24ee',
-		   'X-Line-Trusted-User-With-ACL': 'u3f49485a12a13764c9b80d37b9525757'
+		'X-LINE-ChannelToken' : 'GVkmAjF35ITv/o+20viSyJ3llXhudOoQATN85TxReCihmYLI0TdcyAOoU+kmAXVZFI0U9XUE7NNBSf3dvvxommf6VRYr+LcZ06yMu5lL8EgvJzXgPp7lcmUKUa6mJR3EKloHD0ie/kZNvjxtSXRVrq18BSl7lGXPAT9HRw/DX2c='
 	})
 	.send({
 		  "to":[frm],
