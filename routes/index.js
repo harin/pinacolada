@@ -203,6 +203,7 @@ router.post('/training', function(req,res){
 	});
 	
 	answer = stuff[_.floor(Math.random() * stuff.length)]
+	console.log(stuff, 'stuff');
 	
 	bc.sendText([mid], "You seem to like " + (answer));
 
