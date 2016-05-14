@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var bc = require('./lib/bc');
+var bc = require('../lib/bc');
 var _ = require('lodash');
 
 router.get('/', function(req,res){
