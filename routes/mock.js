@@ -19,11 +19,10 @@ router.post('/callback', function(req, res) {
     var keys = Object.keys(en).map(function(key) {
       return key.toUpperCase();
     });
-    console.log(keys);
     var currentState = fsm.getState(fromMID);
     var state = fsm.clockNext(fromMID, keys);
     console.log(fromMID, ' switched from ', currentState, ' to ', state);
-    res.send(200);
+    res.status(200).json(keys);
   });
 });
 
