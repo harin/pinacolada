@@ -30,6 +30,14 @@
     
     function done(){
         console.log(likeness);
+        $.ajax({
+            url: '/training',
+            type: 'post',
+            data: likeness,
+            success: function(data){
+                console.log(data, 'pin spam');
+            }
+        });
     }
     
     $(document).ready(function(){

@@ -16,11 +16,6 @@ wongnai({
     nationality: ['japanese', 'italian'],
     food: ['fastfood', 'ice cream']
   }, user, 1);
-
-  // {
-  //   1: ['japanese', 'italian', 'ice cream']
-  //   3: []
-  // }
  
   //love
   pml.learnInput({
