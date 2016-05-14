@@ -27,6 +27,23 @@ var sampleQuery = {
   "price": [125, 100] //Set of prices, will use max() and min() or only max() if length == 1
 };
 
+
+var getMove = function(currentState) {
+	if (currentState === 'IDLE') {
+		return 'INQUIRY'
+	} else if (currentState === 'WAIT_LOCATION') {
+		return 'LOCATION'
+	} else if (currentState === 'SUGGEST') {
+		return 'SATISFIED'
+	} else if (currentState === 'FEEDBACK') {
+		return 'FEEDBACK'
+	} else if (currentState ===' DONT_UNDERSTAND' ) {
+		return 'RESET';
+	} else {
+		return 'RESET';
+	}
+}
+
 var respondForState = function(mid, state) {
 	var msg = null;
 	if (state === 'IDLE') {
@@ -78,7 +95,7 @@ router.post('/callback', function(req, res) {
 			}
 
 			if (isLocation && currentState === 'WAIT_LOCATION'){
-				
+
 				var location = result.content.location;
 				respondForState(fromMID, currentState);
 				newState = fsm.clockNext(fromMID, ['LOCATION']);
@@ -93,12 +110,12 @@ router.post('/callback', function(req, res) {
 				client.message(text, {}, function(err, data){
 					var en = data.entities;
 					console.log(JSON.stringify(data, null, 2));
-					var keys = Object.keys(en).map(function(val) {
-						return val.toUpperCase();
-					});
-					var object = {};
-					console.log('moving with ', keys);
+					// var keys = Object.keys(en).map(function(val) {
+					// 	return val.toUpperCase();
+					// });
 
+					keys = [getMove(currentState)];
+					console.log('moving with ', keys);
 					if (keys.length > 0) {
 						newState = fsm.clockNext(fromMID, keys);
 					}
