@@ -53,9 +53,18 @@ var respondForState = function(mid, state) {
 	} else if (state === 'SUGGEST') {
 		// build query from user state
 		var state = userState[mid];
-
-		return query(sampleQuery).then(function(data){
-			console.log(data);
+		var query = sampleQuery;
+		if (state.location) {
+			query = {
+				latitude: state.location.latitude,
+				longitude: state.location.longitude
+			}
+		}
+		return query(query).then(function(data){
+			var firstRest = data[0];
+			var url = "http://www.wongnai.com/" + firstRest.url;
+			var msg = "Why don't you do eat at " + url;
+			bc.sendText([mid], msg);
 		});
 	} else if (state === 'DONT_UNDERSTAND') {
 		msg = "Sorry, I don't understand."
