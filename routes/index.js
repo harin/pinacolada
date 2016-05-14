@@ -183,7 +183,7 @@ router.post('/training', function(req,res){
 	var xdict = pml.parseTinder(output);
 	var ah = xdict['3'];
 	
-	if(ah.length == 0){
+	if(ah['nationality'].length == 0 && ah['food'].length == 0){
 		ah = xdict['1'];
 	}
 	
