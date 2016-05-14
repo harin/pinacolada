@@ -143,7 +143,7 @@ router.post('/callback', function(req, res) {
 					return res.send('OK');
 				}
 
-				if (text.match(/hi pin/i) {
+				if (text.match(/hi pin/i)){
 					newState = fsm.clockNext(fromMID, 'RESET');
 					console.log(fromMID, ' switched from ', currentState, ' to ', newState);
 					return res.send('OK');
