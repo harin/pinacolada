@@ -2,12 +2,8 @@ var salient = require('salient');
 var cp = require('concepts-parser');
 var glossary = new salient.glossary.Glossary();
 
-var test = "I hate Thai food but not Japanese";
-glossary.parse(test);
+var i = JSON.stringify({Hi : "d"})
 
-//console.log(glossary.root);
-
-console.log(glossary.root.next);
-
+console.log(JSON.stringify(i));
 //console.log(glossary.root);
 //console.log(glossary.concepts());
