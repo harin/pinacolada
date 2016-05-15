@@ -1,9 +1,11 @@
 var express = require('express');
+var config = require('../config.js');
 var router = express.Router();
 var Promise = require('bluebird');
 var gm = require('gm').subClass({imageMagick: true});
 var request = require('request');
 var fs = require('fs');
+var unirest = require('unirest');
 
 var bc = require('../lib/bc');
 var _ = require('lodash');
@@ -451,7 +453,7 @@ router.post('/callback', function(req, res) {
 //rid == restaurant id
 //indx = nth photo
 router.get('/photos/:rid/:indx/:size', function(req, res) {
-  unirest.get(wongnai +'/restaurants/' + req.params.rid+'/photos.json')
+  unirest.get(wongnai +'/restaurants/' + req.params.rid +'/photos.json')
     .headers({
       'Content-Type': 'application/json'
     })
@@ -460,21 +462,20 @@ router.get('/photos/:rid/:indx/:size', function(req, res) {
       if(r.statusType < 3) {
         var idx = _.toInteger(req.params.indx);
         var size = _.toInteger(req.params.size);
-              console.log(r);
         res.set('Content-Type', 'image/jpeg');
-        gm(request.get(res.body.page.entities.smallUrl))
+        gm(request.get(r.body.page.entities[idx].smallUrl))
           .resize(size)
           .stream(function(err, stdout, stderr) {
             if(err) {
               console.log(err);
-              res.sendStatus(500)
+              res.sendStatus(404)
             } else {
               stdout.pipe(res);
             }
           })
       
       } else {
-        res.sendStatus(500);
+        res.sendStatus(404);
       }
     });
 });
