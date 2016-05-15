@@ -330,6 +330,7 @@ router.post('/training', function(req,res){
 	
 	bc.sendText([mid], "You seem to like " + (answer));
 	fsm.idle(mid);
+	
 	res.send('tinder done', output);
 });
 
