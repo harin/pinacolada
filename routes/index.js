@@ -272,9 +272,10 @@ var respondForState = function (mid, state) {
 			bc.sendLink2([mid], 'wong1', msg.name, msg.url);
 			sendText([mid], '' + intro + " It's priced at around " + msg.price + " THB");
 
-			// bc.sendImage([mid], rest, 0);
-			// bc.sendImage([mid], rest, 1);
-			// bc.sendImage([mid], rest, 2);
+
+			bc.sendImage([mid], rest, 0);
+			bc.sendImage([mid], rest, 9);
+			bc.sendImage([mid], rest, 18);
 			// bc.sendImage([mid], rest, 3);
 			userState[mid].suggestedCount++;
 			return null;
