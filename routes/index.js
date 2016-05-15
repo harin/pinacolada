@@ -309,7 +309,12 @@ router.post('/training', function(req,res){
 	var mid = req.body.mid;
 	var user = MEMORY[mid] || { w: {} };
 	
-	pml.learnTinder(output, user);
+	// pml.learnTinder(output, user);
+	
+	pml.learnTinder({
+		1: ['japanese', 'french', 'fastfood'],
+		3: ['indian']
+	}, user);
 	
 	for(var i = 0; i < objectKeys.length; i++){
 		var genre = objectKeys[i];
