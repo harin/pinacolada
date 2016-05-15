@@ -351,6 +351,10 @@ router.post('/training', function(req,res){
 	bc.sendText([mid], "You seem to like " + (answer));
 	fsm.idle(mid);
 	
+	console.log(pml.output(MEMORY[mid]));
+	console.log(pml.output(MEMORY[mid]));
+	console.log(pml.output(MEMORY[mid]));
+	
 	res.send('tinder done', output);
 });
 
