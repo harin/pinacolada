@@ -105,8 +105,13 @@ var textToAction = function (mid, text, state) {
 
 		text = text.toLowerCase();
 		client.message(text, {}, function (err, data) {
-			var entities = data.entities;
 			console.log(JSON.stringify(data, null, 2));
+			
+			var entities = data.entities;
+			var keys = Object.keys(entities).map(function(v) {
+				return v.toUpperCase();
+			});
+
 			obj = {};
 			_.forOwn(entities, function(v, k) {
 				if (_.isArray(v)) {
