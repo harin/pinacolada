@@ -82,23 +82,7 @@ var VALID_Q_ATTRIBUTES = [
 
 var SUGGEST_LIMIT = 10;
 
-var getMove = function (currentState) {
-	if (currentState === 'IDLE') {
-		return 'INQUIRY'
-	} else if (currentState === 'WAIT_LOCATION') {
-		return 'LOCATION'
-	} else if (currentState === 'SUGGEST') {
-		return 'SATISFIED'
-	} else if (currentState === 'FEEDBACK') {
-		return 'FEEDBACK'
-	} else if (currentState === ' DONT_UNDERSTAND') {
-		return 'RESET';
-	} else {
-		return 'RESET';
-	}
-}
-
-var sendText = function (mids, msg) {
+var sendText = function(mids, msg) {
 	if (DEBUG) {
 		console.log(mids, msg);
 	} else {
@@ -250,7 +234,7 @@ var respondForState = function (mid, state) {
 			var msg = pinResp.SUGGEST(rest)
 			sendText([mid], "How about this? It's priced at around " + msg.price + " THB");
 			bc.sendLink2([mid], 'wong1', msg.name, msg.url);
-			
+
 			// bc.sendImage([mid], rest, 0);
 			// bc.sendImage([mid], rest, 1);
 			// bc.sendImage([mid], rest, 2);
