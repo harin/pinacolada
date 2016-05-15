@@ -249,7 +249,7 @@ var respondForState = function (mid, state) {
 
 			var msg = pinResp.SUGGEST(rest)
 			sendText([mid], "How about this? It's priced at around " + msg.price + " THB");
-			bc.sendLink([mid], 'wong1', msg.name, msg.url);
+			bc.sendLink2([mid], 'wong1', msg.name, msg.url);
 			
 			// bc.sendImage([mid], rest, 0);
 			// bc.sendImage([mid], rest, 1);
