@@ -329,7 +329,7 @@ router.post('/training', function(req,res){
 	console.log(stuff, 'stuff');
 	
 	bc.sendText([mid], "You seem to like " + (answer));
-	fsm.idle();
+	fsm.idle(mid);
 	res.send('tinder done', output);
 });
 
