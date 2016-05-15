@@ -196,7 +196,12 @@ var respondForState = function (mid, state) {
 			latitude: state.location.latitude,
 			longitude: state.location.longitude
 		}
-		userQuery = _.pick(state, VALID_Q_ATTRIBUTES);
+
+		VALID_Q_ATTRIBUTES.forEach(function(attr){
+			if (state[attr]?) {
+				userQuery[attr] = state[attr]
+			}
+		});
 		console.log('userQuery after pick = ', userQuery);
 		query = _.assign(query, userQuery);
 
