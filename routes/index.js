@@ -249,11 +249,10 @@ var respondForState = function(mid, state) {
 
 			var msg = pinResp.SUGGEST(rest)
 			sendText([mid], msg);
-      sendImage([mid], rest, 0);
-      sendImage([mid], rest, 1);
-      sendImage([mid], rest, 2);
-      sendImage([mid], rest, 3);
-			userState[mid].suggestedCount++;
+      bc.sendImage([mid], rest, 0);
+      bc.sendImage([mid], rest, 1);
+      bc.sendImage([mid], rest, 2);
+      userState[mid].suggestedCount++;
 			return null;
 		})
 		.catch(function(err) {
