@@ -2,7 +2,7 @@ var express = require('express');
 var config = require('../config.js');
 var router = express.Router();
 var Promise = require('bluebird');
-var gm = require('gm').subClass({imageMagick: true});
+var gm = require('gm').subClass({ imageMagick: true });
 var request = require('request');
 var fs = require('fs');
 var unirest = require('unirest');
@@ -29,29 +29,29 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 var sampleQuery = {
-  "latitude": 10.000033,
-  "longitude": 12.0003,
-  "radius": 2.0, //KM?
-  "nationality": ["japanese", "thai"],
-  "food": ["ice cream", "fastfood"],
-  "business": ["street food", "food truck"],
-  "alcohol": ["wine"],
-  "parking": ["no parking"],
-  "sort": "best match",
-  "open": true,
-  "discount": true,
-  "page": {
-    "number": 2, //start with 1
-    "size": 20
-  },
-  "campaign": "ais",
-  "price": [125, 100] //Set of prices, will use max() and min() or only max() if length == 1
+	"latitude": 10.000033,
+	"longitude": 12.0003,
+	"radius": 2.0, //KM?
+	"nationality": ["japanese", "thai"],
+	"food": ["ice cream", "fastfood"],
+	"business": ["street food", "food truck"],
+	"alcohol": ["wine"],
+	"parking": ["no parking"],
+	"sort": "best match",
+	"open": true,
+	"discount": true,
+	"page": {
+		"number": 2, //start with 1
+		"size": 20
+	},
+	"campaign": "ais",
+	"price": [125, 100] //Set of prices, will use max() and min() or only max() if length == 1
 };
 
 var MOVES = ['INQUIRY', 'LOCATION', 'SATISFIED', 'FEEDBACK'
-							, 'RESET', 'UNSATISFIED', 'SURPRISE', 'CUISINE'];
+	, 'RESET', 'UNSATISFIED', 'SURPRISE', 'CUISINE'];
 var NORMAL_MOVES = ['INQUIRY', 'LOCATION', 'SATISFIED', 'FEEDBACK',
-										,'RESET', 'UNSATISFIED'];
+	, 'RESET', 'UNSATISFIED'];
 
 var QUERY_WEIGHT = {
 	'INQUIRY': 1,
@@ -73,7 +73,7 @@ var VALID_Q_ATTRIBUTES = [
 	'nationality',
 	'food',
 	'business',
-	'alcohol' ,
+	'alcohol',
 	'parking',
 	'open',
 	'discount',
@@ -82,7 +82,7 @@ var VALID_Q_ATTRIBUTES = [
 
 var SUGGEST_LIMIT = 10;
 
-var getMove = function(currentState) {
+var getMove = function (currentState) {
 	if (currentState === 'IDLE') {
 		return 'INQUIRY'
 	} else if (currentState === 'WAIT_LOCATION') {
@@ -91,14 +91,14 @@ var getMove = function(currentState) {
 		return 'SATISFIED'
 	} else if (currentState === 'FEEDBACK') {
 		return 'FEEDBACK'
-	} else if (currentState ===' DONT_UNDERSTAND' ) {
+	} else if (currentState === ' DONT_UNDERSTAND') {
 		return 'RESET';
 	} else {
 		return 'RESET';
 	}
 }
 
-var sendText = function(mids, msg) {
+var sendText = function (mids, msg) {
 	if (DEBUG) {
 		console.log(mids, msg);
 	} else {
@@ -106,21 +106,21 @@ var sendText = function(mids, msg) {
 	}
 }
 
-var textToAction = function(mid, text, state) {
-	return new Promise(function(resolve, reject) {
+var textToAction = function (mid, text, state) {
+	return new Promise(function (resolve, reject) {
 		var TEXT = text.toUpperCase();
-		console.log ('TEXT = ' + TEXT);
+		console.log('TEXT = ' + TEXT);
 		if (MOVES.indexOf(TEXT) >= 0) {
 			return resolve([TEXT]);
 		}
 
-		if (text.match(/hi pin/i)){
+		if (text.match(/hi pin/i)) {
 			console.log('matched hi pin');
 			return resolve(['RESET']);
 		}
 
 		text = text.toLowerCase();
-		client.message(text, {}, function(err, data){
+		client.message(text, {}, function (err, data) {
 			var entities = data.entities;
 			console.log(JSON.stringify(data, null, 2));
 
@@ -131,11 +131,11 @@ var textToAction = function(mid, text, state) {
 				if (keys.indexOf('UNSATISFIED') >= 0) {
 					sendText([mid], pinResp.UNSATISFIED());
 					obj = {}
-					keys.forEach(function(key) {
+					keys.forEach(function (key) {
 						if (VALID_QUERY_KEYS.indexOf(key) >= 0) {
 							var entity = entities[key];
 							if (Array.isArray(entity)) {
-								obj[key] = entity.map(function(val){
+								obj[key] = entity.map(function (val) {
 									if (typeof val.value === 'object') {
 										return val.value.value;
 									} else {
@@ -151,7 +151,7 @@ var textToAction = function(mid, text, state) {
 				}
 			} else if (state === 'FEEDBACK') {
 				alpha = null;
-				if (keys.indexOf('SATISFIED') >= 0 ) {
+				if (keys.indexOf('SATISFIED') >= 0) {
 					alpha = 1;
 					sendText([mid], pinResp.SATISFIED_FEEDBACK());
 				} else if (keys.indexOf('UNSATISFIED') >= 0) {
@@ -163,22 +163,22 @@ var textToAction = function(mid, text, state) {
 				var passQuery = MEMORY[mid] || { w: {} };
 				learnedQuery = pml.learnInput(query, passQuery, alpha);
 				MEMORY[mid] = learnedQuery;
-				
-				if(!HISTORY[mid]){
+
+				if (!HISTORY[mid]) {
 					HISTORY[mid] = [];
 				}
-				
+
 				//Save to history
 				HISTORY[mid].push(query);
 
 				keys = ['FEEDBACK'];
 			}
 
-			keys = keys.map(function(key) {
+			keys = keys.map(function (key) {
 				return key.toUpperCase();
-			}).filter(function(key) {
+			}).filter(function (key) {
 				return NORMAL_MOVES.indexOf(key) >= 0;
-			}).sort(function(a,b) {
+			}).sort(function (a, b) {
 				if (QUERY_WEIGHT[a] && QUERY_WEIGHT[b])
 					return QUERY_WEIGHT[a] > QUERY_WEIGHT[b];
 				else
@@ -190,13 +190,13 @@ var textToAction = function(mid, text, state) {
 	});
 }
 
-var askFeedback = function(mid) {
+var askFeedback = function (mid) {
 	userState[mid].waitingForFeedback = false;
 	msg = pinResp.FEEDBACK();
 	sendText([mid], msg);
 }
 
-var respondForState = function(mid, state) {
+var respondForState = function (mid, state) {
 	var msg = null;
 	if (state === 'IDLE') {
 		msg = pinResp.IDLE();
@@ -214,15 +214,15 @@ var respondForState = function(mid, state) {
 		query = _.assign(query, userQuery);
 
 		var passQuery = MEMORY[mid] || { w: {} };
-		learnedQuery = pml.learnInput(query, passQuery);		
+		learnedQuery = pml.learnInput(query, passQuery);
 		MEMORY[mid] = learnedQuery;
 
 		console.log('state ', state);
-		console.log('userQuery ',userQuery);
+		console.log('userQuery ', userQuery);
 		var activeQuery = null;
 		if (Object.keys(userQuery).length > 0) {
 			console.log('using unlearned query');
- 			activeQuery = query;
+			activeQuery = query;
 		} else {
 			console.log('using learned query');
 			activeQuery = learnedQuery;
@@ -231,7 +231,7 @@ var respondForState = function(mid, state) {
 		userState[mid].lastSuggestion = activeQuery;
 		sendText([mid], pinResp.SUGGEST_LOOKUP());
 		console.log('querying wongnai with ' + JSON.stringify(activeQuery));
-		return queryWongnai(activeQuery).then(function(data){
+		return queryWongnai(activeQuery).then(function (data) {
 			var rest = null;
 			var count = userState[mid].suggestedCount;
 			if (data.length > count) {
@@ -240,7 +240,7 @@ var respondForState = function(mid, state) {
 				rest = _.sample(data);
 			}
 
-			console.log (data.map(function(rest) {
+			console.log(data.map(function (rest) {
 				return {
 					name: rest.displayName,
 					priceRange: rest.priceRange.name
@@ -249,21 +249,21 @@ var respondForState = function(mid, state) {
 
 			var msg = pinResp.SUGGEST(rest)
 			sendText([mid], msg);
-      sendImage([mid], rest, 0);
-      sendImage([mid], rest, 1);
-      sendImage([mid], rest, 2);
-      sendImage([mid], rest, 3);
+			bc.sendImage([mid], rest, 0);
+			bc.sendImage([mid], rest, 1);
+			bc.sendImage([mid], rest, 2);
+			bc.sendImage([mid], rest, 3);
 			userState[mid].suggestedCount++;
 			return null;
 		})
-		.catch(function(err) {
-			console.error(err.stack);
-			return null;
-		});
+			.catch(function (err) {
+				console.error(err.stack);
+				return null;
+			});
 	} else if (state === 'FEEDBACK') {
 		if (typeof userState[mid].waitingForFeedback === 'undefined') {
 			userState[mid].waitingForFeedback = true;
-			setTimeout(function() {
+			setTimeout(function () {
 				askFeedback(mid)
 			}, 15000);
 		}
@@ -276,7 +276,7 @@ var respondForState = function(mid, state) {
 	return null;
 }
 
-var ensureUserState = function(mid) {
+var ensureUserState = function (mid) {
 	if (!userState[mid]) {
 		userState[mid] = {
 			suggestedCount: 0
@@ -284,7 +284,7 @@ var ensureUserState = function(mid) {
 	}
 }
 
-var updateUserState = function(mid, object) {
+var updateUserState = function (mid, object) {
 	ensureUserState(mid);
 	_.merge(userState[mid], object);
 	console.log(userState[mid]);
@@ -292,35 +292,35 @@ var updateUserState = function(mid, object) {
 
 router.get('/')
 
-router.get('/', function(req,res){
+router.get('/', function (req, res) {
 	res.send('PIN is up.');
 });
 
-router.get('/foodboard', function(req,res){
+router.get('/foodboard', function (req, res) {
 	var foods = Object.keys(wongnaiEnum.raw.food);
 	var nationalities = Object.keys(wongnaiEnum.raw.nationality);
 	var combined = _.concat(foods, nationalities);
 	var mid = req.query.mid;
-	
+
 	combined = _.pull(combined, 'international', 'others', 'quick meal', 'beverage');
 
-	res.render('foodboard', {title: 'Foodboard', foods: combined, mid: mid})
+	res.render('foodboard', { title: 'Foodboard', foods: combined, mid: mid })
 });
 
-router.post('/training', function(req,res){
+router.post('/training', function (req, res) {
 	var objectKeys = Object.keys(req.body.likeness);
-	var output = {1: [], 3:[]};
+	var output = { 1: [], 3: [] };
 	var mid = req.body.mid;
 	var user = MEMORY[mid] || { w: {} };
-	
+
 	pml.learnTinder(output, user);
-	
+
 	pml.learnTinder({
 		1: ['japanese', 'french', 'fastfood'],
 		3: ['indian']
 	}, user);
-	
-	for(var i = 0; i < objectKeys.length; i++){
+
+	for (var i = 0; i < objectKeys.length; i++) {
 		var genre = objectKeys[i];
 		var score = req.body.likeness[genre];
 		output[score].push(genre);
@@ -328,23 +328,23 @@ router.post('/training', function(req,res){
 
 	MEMORY[mid] = user;
 	bc.sendText([mid], "That's very interesting.");
-	
+
 	var xdict = pml.parseTinder(output);
 	var ah = xdict['3'];
-	
-	if(ah['nationality'].length == 0 && ah['food'].length == 0){
+
+	if (ah['nationality'].length == 0 && ah['food'].length == 0) {
 		ah = xdict['1'];
 	}
-	
+
 	var answer = 'nothing in particular..';
-	
+
 	console.log(xdict, 'xdict');
-	
+
 	var stuff = [];
-	_.forOwn(xdict, function(v,k) {
-		_.forOwn(v, function(v2, k2) {
-			_.forEach(v2, function(e) {
-				if(k2 == 'nationality') {
+	_.forOwn(xdict, function (v, k) {
+		_.forOwn(v, function (v2, k2) {
+			_.forEach(v2, function (e) {
+				if (k2 == 'nationality') {
 					stuff.push(_.capitalize(e + ' food'));
 				} else {
 					stuff.push(_.capitalize(e));
@@ -352,27 +352,27 @@ router.post('/training', function(req,res){
 			});
 		});
 	});
-	
+
 	answer = stuff[_.floor(Math.random() * stuff.length)]
-	
+
 	console.log(stuff, 'stuff');
-	
+
 	bc.sendText([mid], "You seem to like " + (answer));
 	fsm.idle(mid);
-	
+
 	console.log(pml.output(MEMORY[mid]));
 	console.log(pml.output(MEMORY[mid]));
 	console.log(pml.output(MEMORY[mid]));
-	
+
 	res.send('tinder done', output);
 });
 
 
 /* GET home page. */
-router.post('/callback', function(req, res) {
-	
-	console.log('called back', JSON.stringify(req.body.result,null,2));
-	
+router.post('/callback', function (req, res) {
+
+	console.log('called back', JSON.stringify(req.body.result, null, 2));
+
 	// create mock line response
 	if (DEBUG) {
 		req.body.result = [
@@ -391,7 +391,7 @@ router.post('/callback', function(req, res) {
 			req.body.result[0].content.location = req.body.location;
 		}
 
-		console.log(JSON.stringify(req.body,null,2));
+		console.log(JSON.stringify(req.body, null, 2));
 	}
 
 	try {
@@ -438,24 +438,24 @@ router.post('/callback', function(req, res) {
 			//Plain Text
 			var text = result.content.text;
 			textToAction(fromMID, text, currentState)
-			.then(function(actions){
-				console.log('actions ',actions);
-				if (actions.indexOf('SATISFIED') >= 0) {
-					// reset suggested count
-					userState[fromMID].suggestedCount = 0;
-					sendText([fromMID], pinResp.SATISFIED_SUGGEST());
-				}
+				.then(function (actions) {
+					console.log('actions ', actions);
+					if (actions.indexOf('SATISFIED') >= 0) {
+						// reset suggested count
+						userState[fromMID].suggestedCount = 0;
+						sendText([fromMID], pinResp.SATISFIED_SUGGEST());
+					}
 
-				console.log('actions = ' + actions);
-				newState = fsm.clockNext(fromMID, actions);
-				console.log(fromMID, ' switched from ', currentState, ' to ', newState);
-				respondForState(fromMID, newState);
-				res.send('OK');
-			})
-			.catch(function(err){
-				console.error(err.stack);
-				res.sendStatus(500);
-			});
+					console.log('actions = ' + actions);
+					newState = fsm.clockNext(fromMID, actions);
+					console.log(fromMID, ' switched from ', currentState, ' to ', newState);
+					respondForState(fromMID, newState);
+					res.send('OK');
+				})
+				.catch(function (err) {
+					console.error(err.stack);
+					res.sendStatus(500);
+				});
 		}
 	} catch (err) {
 		console.error(err.stack);
@@ -465,32 +465,32 @@ router.post('/callback', function(req, res) {
 
 //rid == restaurant id
 //indx = nth photo
-router.get('/restaurants/:rid/:indx/:size', function(req, res) {
-  unirest.get(wongnai +'/restaurants/' + req.params.rid +'/photos.json')
-    .headers({
-      'Content-Type': 'application/json'
-    })
-    .encoding('utf-8')
-    .end(function(r) {
-      if(r.statusType < 3) {
-        var idx = _.toInteger(req.params.indx);
-        var size = _.toInteger(req.params.size);
-        res.set('Content-Type', 'image/jpeg');
-        gm(request.get(r.body.page.entities[idx].smallUrl))
-          .resize(size)
-          .stream(function(err, stdout, stderr) {
-            if(err) {
-              console.log(err);
-              res.sendStatus(404)
-            } else {
-              stdout.pipe(res);
-            }
-          })
-      
-      } else {
-        res.sendStatus(404);
-      }
-    });
+router.get('/restaurants/:rid/:indx/:size', function (req, res) {
+	unirest.get(wongnai + '/restaurants/' + req.params.rid + '/photos.json')
+		.headers({
+			'Content-Type': 'application/json'
+		})
+		.encoding('utf-8')
+		.end(function (r) {
+			if (r.statusType < 3) {
+				var idx = _.toInteger(req.params.indx);
+				var size = _.toInteger(req.params.size);
+				res.set('Content-Type', 'image/jpeg');
+				gm(request.get(r.body.page.entities[idx].smallUrl))
+					.resize(size)
+					.stream(function (err, stdout, stderr) {
+						if (err) {
+							console.log(err);
+							res.sendStatus(404)
+						} else {
+							stdout.pipe(res);
+						}
+					})
+
+			} else {
+				res.sendStatus(404);
+			}
+		});
 });
 
 module.exports = router;
