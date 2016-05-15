@@ -447,7 +447,7 @@ router.get('/photos/:rid/:indx/:size', function(req, res) {
         var idx = _.toInteger(req.params.indx);
         var size = _.toInteger(req.params.size);
         res.set('Content-Type', 'image/jpeg');
-        var gm(request.get(res.body.page.entities.smallUrl))
+        gm(request.get(res.body.page.entities.smallUrl))
           .resize(size)
           .stream(function(err, stdout, stderr) {
             if(err) {
