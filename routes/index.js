@@ -1,19 +1,24 @@
 var express = require('express');
 var router = express.Router();
 var Promise = require('bluebird');
+var gm = require('gm').subClass({imageMagick: true});
+var request = require('request');
+var fs = require('fs');
 
 var bc = require('../lib/bc');
 var _ = require('lodash');
 var wongnaiEnum = require('../lib/wongnai/enum.js');
 var getty = require('../lib/getty');
 var pml = require('../lib/pml');
+var pinResp = require('../lib/response');
 
 var MEMORY = {};
 var HISTORY = {};
 
 var fsm = require('../lib/fsm');
 var client = require('../lib/wit_client');
-var queryWongnai = require('../lib/wongnai');
+var queryWongnai = require('../lib/wongnai/index.js');
+var wongnai = "https://www.wongnai.com";
 var userState = {};
 
 var DEBUG = true;
@@ -59,7 +64,7 @@ var VALID_QUERY_KEYS = [
 	'latitude', 'longitude', 'radius',
 	'nationality', 'food', 'business',
 	'alcohol', 'parking', 'sort',
-	'open', 'discount'
+	'open', 'discount', 'price'
 ]
 
 var VALID_Q_ATTRIBUTES = [
@@ -69,7 +74,8 @@ var VALID_Q_ATTRIBUTES = [
 	'alcohol' ,
 	'parking',
 	'open',
-	'discount'
+	'discount',
+	'price'
 ]
 
 var SUGGEST_LIMIT = 10;
@@ -120,7 +126,8 @@ var textToAction = function(mid, text, state) {
 			// keys = [getMove(state)];
 			if (state === 'SUGGEST') {
 				// build user overridden preference
-				if (keys.indexOf('UNSATISFIED')) {
+				if (keys.indexOf('UNSATISFIED') >= 0) {
+					sendText([mid], pinResp.UNSATISFIED());
 					obj = {}
 					keys.forEach(function(key) {
 						if (VALID_QUERY_KEYS.indexOf(key) >= 0) {
@@ -144,8 +151,10 @@ var textToAction = function(mid, text, state) {
 				alpha = null;
 				if (keys.indexOf('SATISFIED') >= 0 ) {
 					alpha = 1;
+					sendText([mid], pinResp.SATISFIED_FEEDBACK());
 				} else if (keys.indexOf('UNSATISFIED') >= 0) {
 					alpha = -1;
+					sendText([mid], pinResp.UNSATISFIED_FEEDBACK());
 				}
 				var query = userState[mid].lastSuggestion;
 				console.log('last suggestion', query);
@@ -181,18 +190,17 @@ var textToAction = function(mid, text, state) {
 
 var askFeedback = function(mid) {
 	userState[mid].waitingForFeedback = false;
-	msg = 'Do you like the restaurant I suggested?';
+	msg = pinResp.FEEDBACK();
 	sendText([mid], msg);
 }
 
 var respondForState = function(mid, state) {
 	var msg = null;
 	if (state === 'IDLE') {
-		msg = 'How can I help you today';
+		msg = pinResp.IDLE();
 	} else if (state === 'WAIT_LOCATION') {
-		msg = 'Send me your location'; 
+		msg = pinResp.WAIT_LOCATION();
 	} else if (state === 'SUGGEST') {
-
 		// build query from user state
 		var state = userState[mid];
 		var userQuery = {};
@@ -219,17 +227,25 @@ var respondForState = function(mid, state) {
 		}
 
 		userState[mid].lastSuggestion = activeQuery;
-
+		sendText([mid], pinResp.SUGGEST_LOOKUP());
 		console.log('querying wongnai with ' + JSON.stringify(activeQuery));
 		return queryWongnai(activeQuery).then(function(data){
 			var rest = null;
-			if (userState[mid].suggestedCount == 0) {
-				rest = data[0];
+			var count = userState[mid].suggestedCount;
+			if (data.length > count) {
+				rest = data[count];
 			} else {
 				rest = _.sample(data);
 			}
-			var url = "http://www.wongnai.com/" + rest.url;
-			var msg = "Why don't you do eat at " + url;
+
+			console.log (data.map(function(rest) {
+				return {
+					name: rest.displayName,
+					priceRange: rest.priceRange.name
+				}
+			}));
+
+			var msg = pinResp.SUGGEST(rest)
 			sendText([mid], msg);
 			userState[mid].suggestedCount++;
 			return null;
@@ -246,7 +262,7 @@ var respondForState = function(mid, state) {
 			}, 15000);
 		}
 	} else if (state === 'DONT_UNDERSTAND') {
-		msg = "Sorry, I don't understand."
+		msg = pinResp.DONT_UNDERSTAND();
 	}
 
 	console.log("sending ", msg, " to ", mid);
@@ -267,6 +283,8 @@ var updateUserState = function(mid, object) {
 	_.merge(userState[mid], object);
 	console.log(userState[mid]);
 }
+
+router.get('/')
 
 router.get('/', function(req,res){
 	res.send('PIN is up.');
@@ -376,13 +394,13 @@ router.post('/callback', function(req, res) {
 
 		if (userState[fromMID].suggestedCount >= SUGGEST_LIMIT) {
 			console.log(userState[fromMID].suggestedCount);
-			msg = "You're TOO hard to please! I'M DONE!"
+			msg = pinResp.SUGGEST_LIMIT();
 			sendText([fromMID], msg);
 			return res.send('OK');
 		}
 
 		if (currentState === 'WAIT_LOCATION' && !isLocation) {
-			msg = "I'm waiting for your location :(";
+			msg = pinResp.WAIT_LOCATION_REPEAT()
 			// ask user for location
 			sendText([fromMID], msg);
 			return res.send('OK');
@@ -410,6 +428,7 @@ router.post('/callback', function(req, res) {
 				if (actions.indexOf('SATISFIED') >= 0) {
 					// reset suggested count
 					userState[fromMID].suggestedCount = 0;
+					sendText([fromMID], pinResp.SATISFIED_SUGGEST());
 				}
 
 				console.log('actions = ' + actions);
@@ -427,6 +446,35 @@ router.post('/callback', function(req, res) {
 		console.error(err.stack);
 		res.sendStatus(500);
 	}
+});
+
+//rid == restaurant id
+//indx = nth photo
+router.get('/photos/:rid/:indx/:size', function(req, res) {
+  unirest.get(wongnai +'/restaurants/' + req.params.rid+'/photos.json')
+    .headers({
+      'Content-Type': 'application/json'
+    })
+    .encoding('utf-8')
+    .end(function(r) {
+      if(r.statusType < 3) {
+        var idx = _.toInteger(req.params.indx);
+        var size = _.toInteger(req.params.size);
+        res.set('Content-Type', 'image/jpeg');
+        var gm(request.get(res.body.page.entities.smallUrl))
+          .resize(size)
+          .stream(function(err, stdout, stderr) {
+            if(err) {
+              res.sendStatus(500)
+            } else {
+              stdout.pipe(res);
+            }
+          })
+      
+      } else {
+        res.sendStatus(500);
+      }
+    });
 });
 
 module.exports = router;
