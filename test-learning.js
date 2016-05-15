@@ -10,7 +10,15 @@ wongnai({
   price: [250]
 }).then(function(data) {
   //learn from input
-
+    
+  pml.learnTinder({
+    1: ['japanese', 'french', 'fastfood'],
+    3: ['indian']
+  }, user);
+  
+  console.log(user.w);
+  console.log(pml.output(user));
+  
   //like
   pml.learnInput({
     nationality: ['japanese', 'italian'],
@@ -27,8 +35,8 @@ wongnai({
   pml.learnRestaurant(data[0], user);
   pml.learnRestaurant(data[1], user);
   pml.learnRestaurant(data[2], user);
-  console.log(user.w);
-  console.log(pml.output(user));
+ // console.log(user.w);
+ // console.log(pml.output(user));
 })
 
 /*
