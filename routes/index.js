@@ -109,32 +109,30 @@ var textToAction = function (mid, text, state) {
 			console.log(JSON.stringify(data, null, 2));
 
 			keys = Object.keys(entities);
-			// keys = [getMove(state)];
+			obj = {};
+			keys.forEach(function (key) {
+				var entity = entities[key];
+				if (Array.isArray(entity)) {
+					obj[key] = entity.map(function (val) {
+						if (typeof val.value === 'object') {
+							return val.value.value;
+						} else {
+							return val.value;
+						}
+					});
+
+					console.log(key, ':', obj[key]);
+				} else {
+					obj[key] = entities[key].value;
+					console.log(key, ':', obj[key]);
+				}
+			});
+
 			if (state === 'SUGGEST') {
 				// build user overridden preference
 				if (keys.indexOf('UNSATISFIED') >= 0) {
 					sendText([mid], pinResp.UNSATISFIED());
-					obj = {}
-					keys.forEach(function (key) {
-						var entity = entities[key];
-						if (Array.isArray(entity)) {
-							obj[key] = entity.map(function (val) {
-								if (typeof val.value === 'object') {
-									return val.value.value;
-								} else {
-									return val.value;
-								}
-							});
-
-							console.log(key, ':', obj[key]);
-						} else {
-							obj[key] = entities[key].value;
-							console.log(key, ':', obj[key]);
-						}
-					});
-					console.log('updating with ', obj);
 					updateUserState(mid, obj);
-					console.log ('result = ', userState[mid]);
 				}
 			} else if (state === 'FEEDBACK') {
 				alpha = null;
