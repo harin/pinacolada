@@ -13,13 +13,27 @@
 </div>
 <div>
   <% for(var i=0; i< foods.length; i++) {%>
-    <div class="thumbsquare" style="background-image: url(https://i.ytimg.com/vi/ETTyVQrUZt8/maxresdefault.jpg); background-size: auto 100%">
+    <div class="thumbsquare" style="background-image: url('/img/food/<%= foods[i] %>/1.jpg'); background-size: auto 100%">
+        <div class="liked" data-cat="<%= foods[i] %>">
+             <img src="/img/Heart.png" style="opacity: 0.95; height: 50px !important; margin: auto" alt=""/>
+        </div>
+    </div>
+  <% } %>
+  <% for(var i=0; i< foods.length; i++) {%>
+    <div class="thumbsquare" style="background-image: url('/img/food/<%= foods[i] %>/2.jpg'); background-size: auto 100%">
         <div class="liked" data-cat="<%= foods[i] %>">
              <img src="/img/Heart.png" style="opacity: 0.95; height: 50px !important; margin: auto" alt=""/>
         </div>
     </div>
   <% } %>
 </div>
+<br/>
+<br/>
+<p/>
+<br/>
+<br/>
+<br/>
+<br/>
 <div onclick="done()" class="successbtn">
    <h3>Done</h3>
 </div>

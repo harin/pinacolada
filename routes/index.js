@@ -46,6 +46,36 @@ var sampleQuery = {
 
 var MOVES = ['INQUIRY', 'LOCATION', 'SATISFIED', 'FEEDBACK'
 							, 'RESET', 'UNSATISFIED', 'SURPRISE', 'CUISINE'];
+var NORMAL_MOVES = ['INQUIRY', 'LOCATION', 'SATISFIED', 'FEEDBACK',
+										,'RESET', 'UNSATISFIED'];
+
+var QUERY_WEIGHT = {
+	'INQUIRY': 1,
+	'LOCATION': 2,
+	'SATISFIED': 3,
+	'UNSATISFIED': 4,
+	'FEEDBACK': 5,
+	'RESET': 6
+};
+
+var VALID_QUERY_KEYS = [
+	'latitude', 'longitude', 'radius',
+	'nationality', 'food', 'business',
+	'alcohol', 'parking', 'sort',
+	'open', 'discount'
+]
+
+var VALID_Q_ATTRIBUTES = [
+	'nationality',
+	'food',
+	'business',
+	'alcohol' ,
+	'parking',
+	'open',
+	'discount'
+]
+
+var SUGGEST_LIMIT = 10;
 
 var getMove = function(currentState) {
 	if (currentState === 'IDLE') {
@@ -71,7 +101,7 @@ var sendText = function(mids, msg) {
 	}
 }
 
-var textToAction = function(text, state) {
+var textToAction = function(mid, text, state) {
 	return new Promise(function(resolve, reject) {
 		var TEXT = text.toUpperCase();
 		console.log ('TEXT = ' + TEXT);
@@ -84,15 +114,70 @@ var textToAction = function(text, state) {
 			return resolve(['RESET']);
 		}
 
+		text = text.toLowerCase();
 		client.message(text, {}, function(err, data){
-			var en = data.entities;
+			var entities = data.entities;
 			console.log(JSON.stringify(data, null, 2));
-			keys = [getMove(state)];
-			if (keys.length > 0) {
-				return resolve(keys);
+
+			keys = Object.keys(entities);
+			// keys = [getMove(state)];
+			if (state === 'SUGGEST') {
+				// build user overridden preference
+				if (keys.indexOf('UNSATISFIED')) {
+					obj = {}
+					keys.forEach(function(key) {
+						if (VALID_QUERY_KEYS.indexOf(key) >= 0) {
+							var entity = entities[key];
+							if (Array.isArray(entity)) {
+								obj[key] = entity.map(function(val){
+									if (typeof val.value === 'object') {
+										return val.value.value;
+									} else {
+										return val.value;
+									}
+								});
+							} else {
+								obj[key] = entities[key].value;
+							}
+						}
+					});
+					updateUserState(mid, obj);
+				}
+			} else if (state === 'FEEDBACK') {
+				alpha = null;
+				if (keys.indexOf('SATISFIED') >= 0 ) {
+					alpha = 1;
+				} else if (keys.indexOf('UNSATISFIED') >= 0) {
+					alpha = -1;
+				}
+				var query = userState[mid].lastSuggestion;
+				var passQuery = MEMORY[mid] || { w: {} };
+				learnedQuery = pml.learnInput(query, passQuery, alpha);
+				MEMORY[mid] = learnedQuery;
+
+				keys = ['FEEDBACK'];
 			}
+
+			keys = keys.map(function(key) {
+				return key.toUpperCase();
+			}).filter(function(key) {
+				return NORMAL_MOVES.indexOf(key) >= 0;
+			}).sort(function(a,b) {
+				if (QUERY_WEIGHT[a] && QUERY_WEIGHT[b])
+					return QUERY_WEIGHT[a] > QUERY_WEIGHT[b];
+				else
+					return 0;
+			});
+
+			return resolve(keys);
 		});
 	});
+}
+
+var askFeedback = function(mid) {
+	userState[mid].waitingForFeedback = false;
+	msg = 'Do you like the restaurant I suggested?';
+	sendText([mid], msg);
 }
 
 var respondForState = function(mid, state) {
@@ -102,17 +187,36 @@ var respondForState = function(mid, state) {
 	} else if (state === 'WAIT_LOCATION') {
 		msg = 'Send me your location'; 
 	} else if (state === 'SUGGEST') {
+
 		// build query from user state
 		var state = userState[mid];
-		var query = sampleQuery;
-		if (state.location) {
-			query = {
-				latitude: state.location.latitude,
-				longitude: state.location.longitude
-			}
+		var userQuery = {};
+		var query = {
+			latitude: state.location.latitude,
+			longitude: state.location.longitude
 		}
-		console.log('querying wongnai with ' + query);
-		return queryWongnai(query).then(function(data){
+		userQuery = _.pick(state, VALID_Q_ATTRIBUTES);
+		query = _.assign(query, userQuery);
+
+		var passQuery = MEMORY[mid] || { w: {} };
+		learnedQuery = pml.learnInput(query, passQuery);		
+		MEMORY[mid] = learnedQuery;
+
+		console.log('state ', state);
+		console.log('userQuery ',userQuery);
+		var activeQuery = null;
+		if (Object.keys(userQuery).length > 0) {
+			console.log('using unlearned query');
+ 			activeQuery = query;
+		} else {
+			console.log('using learned query');
+			activeQuery = learnedQuery;
+		}
+
+		userState[mid].lastSuggestion = activeQuery;
+
+		console.log('querying wongnai with ' + JSON.stringify(activeQuery));
+		return queryWongnai(activeQuery).then(function(data){
 			var rest = null;
 			if (userState[mid].suggestedCount == 0) {
 				rest = data[0];
@@ -129,6 +233,13 @@ var respondForState = function(mid, state) {
 			console.error(err.stack);
 			return null;
 		});
+	} else if (state === 'FEEDBACK') {
+		if (typeof userState[mid].waitingForFeedback === 'undefined') {
+			userState[mid].waitingForFeedback = true;
+			setTimeout(function() {
+				askFeedback(mid)
+			}, 15000);
+		}
 	} else if (state === 'DONT_UNDERSTAND') {
 		msg = "Sorry, I don't understand."
 	}
@@ -164,6 +275,8 @@ router.get('/foodboard', function(req,res){
 	var combined = _.concat(foods, nationalities);
 	var mid = req.query.mid;
 	
+	combined = _.pull(combined, 'international', 'others', 'quick meal', 'beverage');
+
 	res.render('foodboard', {title: 'Foodboard', foods: combined, mid: mid})
 });
 
@@ -180,11 +293,41 @@ router.post('/training', function(req,res){
 		var score = req.body.likeness[genre];
 		output[score].push(genre);
 	}
-	
-	bc.sendText([mid], "That's very interesting. ");
+
 	MEMORY[mid] = user;
+	bc.sendText([mid], "That's very interesting.");
 	
-	res.send('tinder done');
+	var xdict = pml.parseTinder(output);
+	var ah = xdict['3'];
+	
+	if(ah['nationality'].length == 0 && ah['food'].length == 0){
+		ah = xdict['1'];
+	}
+	
+	var answer = 'nothing in particular..';
+	
+	console.log(xdict, 'xdict');
+	
+	var stuff = [];
+	_.forOwn(xdict, function(v,k) {
+		_.forOwn(v, function(v2, k2) {
+			_.forEach(v2, function(e) {
+				if(k2 == 'nationality') {
+					stuff.push(_.capitalize(e + ' food'));
+				} else {
+					stuff.push(_.capitalize(e));
+				}
+			});
+		});
+	});
+	
+	answer = stuff[_.floor(Math.random() * stuff.length)]
+	
+	console.log(stuff, 'stuff');
+	
+	bc.sendText([mid], "You seem to like " + (answer));
+
+	res.send('tinder done', output);
 });
 
 router.post('/test', function(req,res){
@@ -228,7 +371,11 @@ router.post('/callback', function(req, res) {
 
 		ensureUserState(fromMID);
 
-		if (userState[fromMID].suggestedCount >= 3) {
+		if (userState[fromMID].waitingForFeedback) {
+			return res.send('OK');
+		}
+
+		if (userState[fromMID].suggestedCount >= SUGGEST_LIMIT) {
 			console.log(userState[fromMID].suggestedCount);
 			msg = "You're TOO hard to please! I'M DONE!"
 			sendText([fromMID], msg);
@@ -258,9 +405,9 @@ router.post('/callback', function(req, res) {
 		} else {
 			//Plain Text
 			var text = result.content.text;
-			textToAction(text, currentState)
+			textToAction(fromMID, text, currentState)
 			.then(function(actions){
-
+				console.log('actions ',actions);
 				if (actions.indexOf('SATISFIED') >= 0) {
 					// reset suggested count
 					userState[fromMID].suggestedCount = 0;
