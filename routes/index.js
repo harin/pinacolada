@@ -248,6 +248,7 @@ var respondForState = function (mid, state) {
 
 			sendText([mid], '' + intro + " It's priced at around " + msg.price + " THB");
 			bc.sendLink2([mid], 'wong1', msg.name, msg.url);
+			sendText([mid], "It's priced at around " + msg.price + " THB");
 
 			// bc.sendImage([mid], rest, 0);
 			// bc.sendImage([mid], rest, 1);
