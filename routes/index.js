@@ -249,6 +249,10 @@ var respondForState = function(mid, state) {
 
 			var msg = pinResp.SUGGEST(rest)
 			sendText([mid], msg);
+      sendImage([mid], rest, 0);
+      sendImage([mid], rest, 1);
+      sendImage([mid], rest, 2);
+      sendImage([mid], rest, 3);
 			userState[mid].suggestedCount++;
 			return null;
 		})
@@ -451,7 +455,7 @@ router.post('/callback', function(req, res) {
 
 //rid == restaurant id
 //indx = nth photo
-router.get('/photos/:rid/:indx/:size', function(req, res) {
+router.get('/restaurants/:rid/:indx/:size', function(req, res) {
   unirest.get(wongnai +'/restaurants/' + req.params.rid +'/photos.json')
     .headers({
       'Content-Type': 'application/json'
