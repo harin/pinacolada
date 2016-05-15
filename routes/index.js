@@ -273,9 +273,9 @@ var respondForState = function (mid, state) {
 			sendText([mid], '' + intro + " It's priced at around " + msg.price + " THB");
 
 
-			bc.sendImage([mid], rest, 0);
-			bc.sendImage([mid], rest, 9);
-			bc.sendImage([mid], rest, 18);
+			//bc.sendImage([mid], rest, 0);
+			//bc.sendImage([mid], rest, 9);
+			//bc.sendImage([mid], rest, 18);
 			// bc.sendImage([mid], rest, 3);
 			userState[mid].suggestedCount++;
 			return null;
@@ -490,6 +490,9 @@ router.post('/callback', function (req, res) {
 //rid == restaurant id
 //indx = nth photo
 router.get('/restaurants/:rid/:indx/:size', function (req, res) {
+	var idx = _.toInteger(req.params.indx);
+	var size = _.toInteger(req.params.size);
+
 	unirest.get(wongnai + '/restaurants/' + req.params.rid + '/photos.json')
 		.headers({
 			'Content-Type': 'application/json'
@@ -497,12 +500,6 @@ router.get('/restaurants/:rid/:indx/:size', function (req, res) {
 		.encoding('utf-8')
 		.end(function (r) {
 			if (r.statusType < 3) {
-				var idx = _.toInteger(req.params.indx);
-				var size = _.toInteger(req.params.size);
-				if(size <= 460) {
-					res.sendStatus(404);
-					return;
-				}
 				res.set('Content-Type', 'image/jpeg');
 				gm(request.get(r.body.page.entities[idx].smallUrl))
 					.resize(size)
