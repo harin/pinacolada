@@ -1,6 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var Promise = require('bluebird');
+var gm = require('gm').subClass({imageMagick: true});
+var request = require('request');
+var fs = require('fs');
 
 var bc = require('../lib/bc');
 var _ = require('lodash');
@@ -10,10 +13,12 @@ var pml = require('../lib/pml');
 var pinResp = require('../lib/response');
 
 var MEMORY = {};
+var HISTORY = {};
 
 var fsm = require('../lib/fsm');
 var client = require('../lib/wit_client');
-var queryWongnai = require('../lib/wongnai');
+var queryWongnai = require('../lib/wongnai/index.js');
+var wongnai = "https://www.wongnai.com";
 var userState = {};
 
 var DEBUG = true;
@@ -152,9 +157,17 @@ var textToAction = function(mid, text, state) {
 					sendText([mid], pinResp.UNSATISFIED_FEEDBACK());
 				}
 				var query = userState[mid].lastSuggestion;
+				console.log('last suggestion', query);
 				var passQuery = MEMORY[mid] || { w: {} };
 				learnedQuery = pml.learnInput(query, passQuery, alpha);
 				MEMORY[mid] = learnedQuery;
+				
+				if(!HISTORY[mid]){
+					HISTORY[mid] = [];
+				}
+				
+				//Save to history
+				HISTORY[mid].push(query);
 
 				keys = ['FEEDBACK'];
 			}
@@ -271,6 +284,8 @@ var updateUserState = function(mid, object) {
 	console.log(userState[mid]);
 }
 
+router.get('/')
+
 router.get('/', function(req,res){
 	res.send('PIN is up.');
 });
@@ -332,15 +347,10 @@ router.post('/training', function(req,res){
 	console.log(stuff, 'stuff');
 	
 	bc.sendText([mid], "You seem to like " + (answer));
-
+	fsm.idle();
 	res.send('tinder done', output);
 });
 
-router.post('/test', function(req,res){
-	//u1abe46713713ecbc8b66b04691c354f9
-	bc.sendLink(['u1abe46713713ecbc8b66b04691c354f9'], 'template1');
-	res.send('ok');
-});
 
 /* GET home page. */
 router.post('/callback', function(req, res) {
@@ -435,6 +445,35 @@ router.post('/callback', function(req, res) {
 		console.error(err.stack);
 		res.sendStatus(500);
 	}
+});
+
+//rid == restaurant id
+//indx = nth photo
+router.get('/photos/:rid/:indx/:size', function(req, res) {
+  unirest.get(wongnai +'/restaurants/' + req.params.rid+'/photos.json')
+    .headers({
+      'Content-Type': 'application/json'
+    })
+    .encoding('utf-8')
+    .end(function(r) {
+      if(r.statusType < 3) {
+        var idx = _.toInteger(req.params.indx);
+        var size = _.toInteger(req.params.size);
+        res.set('Content-Type', 'image/jpeg');
+        var gm(request.get(res.body.page.entities.smallUrl))
+          .resize(size)
+          .stream(function(err, stdout, stderr) {
+            if(err) {
+              res.sendStatus(500)
+            } else {
+              stdout.pipe(res);
+            }
+          })
+      
+      } else {
+        res.sendStatus(500);
+      }
+    });
 });
 
 module.exports = router;
