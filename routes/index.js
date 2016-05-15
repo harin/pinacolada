@@ -107,32 +107,40 @@ var textToAction = function (mid, text, state) {
 		client.message(text, {}, function (err, data) {
 			var entities = data.entities;
 			console.log(JSON.stringify(data, null, 2));
-
-			keys = Object.keys(entities);
 			obj = {};
-			keys.forEach(function (key) {
-				var entity = entities[key];
-				if (Array.isArray(entity)) {
-					obj[key] = entity.map(function (val) {
-						if (typeof val.value === 'object') {
-							return val.value.value;
-						} else {
-							return val.value;
-						}
-					});
-
-					console.log(key, ':', obj[key]);
+			_.forOwn(entities, function(v, k) {
+				if (_.isArray(v)) {
+					obj[k] = _.map(v, function(e) {
+						return e.value.value;
+					})
 				} else {
-					obj[key] = entities[key].value;
-					console.log(key, ':', obj[key]);
+					obj[k] = [v.value]
 				}
-			});
+			})
+			console.log(JSON.stringify(obj));
+			updateUserState(mid, obj);
+
+			// keys.forEach(function (key) {
+			// 	var entity = entities[key];
+			// 	if (Array.isArray(entity)) {
+			// 		obj[key] = entity.map(function (val) {
+			// 			if (typeof val.value === 'object') {
+			// 				return val.value.value;
+			// 			} else {
+			// 				return val.value;
+			// 			}
+			// 		});
+			// 		console.log(key, ':', obj[key]);
+			// 	} else {
+			// 		obj[key] = entities[key].value;
+			// 		console.log(key, ':', obj[key]);
+			// 	}
+			// });
 
 			if (state === 'SUGGEST') {
 				// build user overridden preference
 				if (keys.indexOf('UNSATISFIED') >= 0) {
 					sendText([mid], pinResp.UNSATISFIED());
-					updateUserState(mid, obj);
 				}
 			} else if (state === 'FEEDBACK') {
 				alpha = null;
