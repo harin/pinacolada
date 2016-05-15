@@ -116,19 +116,20 @@ var textToAction = function (mid, text, state) {
 					sendText([mid], pinResp.UNSATISFIED());
 					obj = {}
 					keys.forEach(function (key) {
-						if (VALID_QUERY_KEYS.indexOf(key) >= 0) {
-							var entity = entities[key];
-							if (Array.isArray(entity)) {
-								obj[key] = entity.map(function (val) {
-									if (typeof val.value === 'object') {
-										return val.value.value;
-									} else {
-										return val.value;
-									}
-								});
-							} else {
-								obj[key] = entities[key].value;
-							}
+						var entity = entities[key];
+						if (Array.isArray(entity)) {
+							obj[key] = entity.map(function (val) {
+								if (typeof val.value === 'object') {
+									return val.value.value;
+								} else {
+									return val.value;
+								}
+							});
+
+							console.log(key, ':', obj[key]);
+						} else {
+							obj[key] = entities[key].value;
+							console.log(key, ':', obj[key]);
 						}
 					});
 					console.log('updating with ', obj);
@@ -204,7 +205,7 @@ var respondForState = function (mid, state) {
 
 		VALID_Q_ATTRIBUTES.forEach(function(attr){
 			if (state[attr]) {
-				userQuery[attr] = state[attr]
+				userQuery[attr] = state[attr];
 			}
 		});
 		console.log('userQuery after pick = ', userQuery);
@@ -245,6 +246,7 @@ var respondForState = function (mid, state) {
 			}));
 
 			var msg = pinResp.SUGGEST(rest)
+
 			var intros = [
 				'What about this instead?',
 				'This also looks good!'
@@ -259,9 +261,9 @@ var respondForState = function (mid, state) {
 			bc.sendLink2([mid], 'wong1', msg.name, msg.url);
 			sendText([mid], '' + intro + " It's priced at around " + msg.price + " THB");
 
-			bc.sendImage([mid], rest, 0);
-			bc.sendImage([mid], rest, 1);
-			bc.sendImage([mid], rest, 2);
+			// bc.sendImage([mid], rest, 0);
+			// bc.sendImage([mid], rest, 1);
+			// bc.sendImage([mid], rest, 2);
 			// bc.sendImage([mid], rest, 3);
 			userState[mid].suggestedCount++;
 			return null;
