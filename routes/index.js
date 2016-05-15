@@ -105,35 +105,47 @@ var textToAction = function (mid, text, state) {
 
 		text = text.toLowerCase();
 		client.message(text, {}, function (err, data) {
-			var entities = data.entities;
 			console.log(JSON.stringify(data, null, 2));
+			
+			var entities = data.entities;
+			var keys = Object.keys(entities).map(function(v) {
+				return v.toUpperCase();
+			});
 
-			keys = Object.keys(entities);
-			// keys = [getMove(state)];
+			obj = {};
+			_.forOwn(entities, function(v, k) {
+				if (_.isArray(v)) {
+					obj[k] = _.map(v, function(e) {
+						return e.value.value;
+					})
+				} else {
+					obj[k] = [v.value]
+				}
+			})
+			console.log(JSON.stringify(obj));
+			updateUserState(mid, obj);
+
+			// keys.forEach(function (key) {
+			// 	var entity = entities[key];
+			// 	if (Array.isArray(entity)) {
+			// 		obj[key] = entity.map(function (val) {
+			// 			if (typeof val.value === 'object') {
+			// 				return val.value.value;
+			// 			} else {
+			// 				return val.value;
+			// 			}
+			// 		});
+			// 		console.log(key, ':', obj[key]);
+			// 	} else {
+			// 		obj[key] = entities[key].value;
+			// 		console.log(key, ':', obj[key]);
+			// 	}
+			// });
+
 			if (state === 'SUGGEST') {
 				// build user overridden preference
 				if (keys.indexOf('UNSATISFIED') >= 0) {
 					sendText([mid], pinResp.UNSATISFIED());
-					obj = {}
-					keys.forEach(function (key) {
-						if (VALID_QUERY_KEYS.indexOf(key) >= 0) {
-							var entity = entities[key];
-							if (Array.isArray(entity)) {
-								obj[key] = entity.map(function (val) {
-									if (typeof val.value === 'object') {
-										return val.value.value;
-									} else {
-										return val.value;
-									}
-								});
-							} else {
-								obj[key] = entities[key].value;
-							}
-						}
-					});
-					console.log('updating with ', obj);
-					updateUserState(mid, obj);
-					console.log ('result = ', userState[mid]);
 				}
 			} else if (state === 'FEEDBACK') {
 				alpha = null;
@@ -204,7 +216,7 @@ var respondForState = function (mid, state) {
 
 		VALID_Q_ATTRIBUTES.forEach(function(attr){
 			if (state[attr]) {
-				userQuery[attr] = state[attr]
+				userQuery[attr] = state[attr];
 			}
 		});
 		console.log('userQuery after pick = ', userQuery);
@@ -245,6 +257,7 @@ var respondForState = function (mid, state) {
 			}));
 
 			var msg = pinResp.SUGGEST(rest)
+
 			var intros = [
 				'What about this instead?',
 				'This also looks good!'
@@ -258,6 +271,7 @@ var respondForState = function (mid, state) {
 
 			bc.sendLink2([mid], 'wong1', msg.name, msg.url);
 			sendText([mid], '' + intro + " It's priced at around " + msg.price + " THB");
+
 
 			bc.sendImage([mid], rest, 0);
 			bc.sendImage([mid], rest, 9);
