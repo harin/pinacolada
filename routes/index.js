@@ -329,15 +329,10 @@ router.post('/training', function(req,res){
 	console.log(stuff, 'stuff');
 	
 	bc.sendText([mid], "You seem to like " + (answer));
-
+	fsm.idle();
 	res.send('tinder done', output);
 });
 
-router.post('/test', function(req,res){
-	//u1abe46713713ecbc8b66b04691c354f9
-	bc.sendLink(['u1abe46713713ecbc8b66b04691c354f9'], 'template1');
-	res.send('ok');
-});
 
 /* GET home page. */
 router.post('/callback', function(req, res) {
