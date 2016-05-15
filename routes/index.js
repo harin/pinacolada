@@ -9,6 +9,7 @@ var getty = require('../lib/getty');
 var pml = require('../lib/pml');
 
 var MEMORY = {};
+var HISTORY = {};
 
 var fsm = require('../lib/fsm');
 var client = require('../lib/wit_client');
@@ -147,9 +148,17 @@ var textToAction = function(mid, text, state) {
 					alpha = -1;
 				}
 				var query = userState[mid].lastSuggestion;
+				console.log('last suggestion', query);
 				var passQuery = MEMORY[mid] || { w: {} };
 				learnedQuery = pml.learnInput(query, passQuery, alpha);
 				MEMORY[mid] = learnedQuery;
+				
+				if(!HISTORY[mid]){
+					HISTORY[mid] = [];
+				}
+				
+				//Save to history
+				HISTORY[mid].push(query);
 
 				keys = ['FEEDBACK'];
 			}
