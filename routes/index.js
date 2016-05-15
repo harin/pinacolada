@@ -460,11 +460,13 @@ router.get('/photos/:rid/:indx/:size', function(req, res) {
       if(r.statusType < 3) {
         var idx = _.toInteger(req.params.indx);
         var size = _.toInteger(req.params.size);
+              console.log(r);
         res.set('Content-Type', 'image/jpeg');
-        var gm(request.get(res.body.page.entities.smallUrl))
+        gm(request.get(res.body.page.entities.smallUrl))
           .resize(size)
           .stream(function(err, stdout, stderr) {
             if(err) {
+              console.log(err);
               res.sendStatus(500)
             } else {
               stdout.pipe(res);
