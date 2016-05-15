@@ -499,6 +499,10 @@ router.get('/restaurants/:rid/:indx/:size', function (req, res) {
 			if (r.statusType < 3) {
 				var idx = _.toInteger(req.params.indx);
 				var size = _.toInteger(req.params.size);
+				if(size <= 460) {
+					res.sendStatus(404);
+					return;
+				}
 				res.set('Content-Type', 'image/jpeg');
 				gm(request.get(r.body.page.entities[idx].smallUrl))
 					.resize(size)
