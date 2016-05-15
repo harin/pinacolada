@@ -197,6 +197,7 @@ var respondForState = function (mid, state) {
 			longitude: state.location.longitude
 		}
 		userQuery = _.pick(state, VALID_Q_ATTRIBUTES);
+		console.log('userQuery after pick = ', userQuery);
 		query = _.assign(query, userQuery);
 
 		var passQuery = MEMORY[mid] || { w: {} };
@@ -246,9 +247,8 @@ var respondForState = function (mid, state) {
 				intro = _.sample(intros);
 			}
 
-			sendText([mid], '' + intro + " It's priced at around " + msg.price + " THB");
 			bc.sendLink2([mid], 'wong1', msg.name, msg.url);
-			sendText([mid], "It's priced at around " + msg.price + " THB");
+			sendText([mid], '' + intro + " It's priced at around " + msg.price + " THB");
 
 			// bc.sendImage([mid], rest, 0);
 			// bc.sendImage([mid], rest, 1);
