@@ -203,7 +203,7 @@ var respondForState = function (mid, state) {
 		}
 
 		VALID_Q_ATTRIBUTES.forEach(function(attr){
-			if (state[attr]?) {
+			if (state[attr]) {
 				userQuery[attr] = state[attr]
 			}
 		});
