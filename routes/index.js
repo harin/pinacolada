@@ -171,6 +171,11 @@ var textToAction = function (mid, text, state) {
 					return 0;
 			});
 
+			var surpriseIndex = keys.indexOf('SURPRISE');
+			if (surpriseIndex >= 0) {
+				keys[surpriseIndex] = 'INQUIRY';
+			}
+
 			return resolve(keys);
 		});
 	});
